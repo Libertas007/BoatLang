@@ -22,10 +22,10 @@ public class ProgramNode extends Node {
     @Override
     public NodeResult get(Context context) {
         for (DefinitionNode definition : definitions) {
-            System.out.println(definition.get(context));
+            definition.get(context);
         }
         for (StatementNode statement : statements) {
-            System.out.println(statement.get(context));
+            statement.get(context);
         }
         return statements.get(statements.size() - 1).get(context);
     }

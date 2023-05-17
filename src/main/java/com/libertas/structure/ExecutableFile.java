@@ -55,7 +55,7 @@ public class ExecutableFile {
             joiner.add(token.toString());
         }
 
-        System.out.println(joiner);
+        // System.out.println(joiner);
 
         Parser parser = new Parser(tokens);
         program = parser.parse();

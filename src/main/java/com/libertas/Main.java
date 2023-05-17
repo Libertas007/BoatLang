@@ -73,22 +73,22 @@ public class Main {
                 joiner.add(token.toString());
             }
 
-            System.out.println(joiner);
+            // System.out.println(joiner);
 
             Context globalContext = new Context();
             globalContext.setVariable("test", new Barrel(new Fraction(69)));
 
             StandardLibrary stdLibrary = new StandardLibrary();
-            System.out.println(stdLibrary.functions);
+            // System.out.println(stdLibrary.functions);
             globalContext.loadContext(stdLibrary.asContext());
 
-            System.out.println(globalContext.getFunctions());
-            System.out.println(globalContext.getVariables());
+            // System.out.println(globalContext.getFunctions());
+            // System.out.println(globalContext.getVariables());
 
             Parser parser = new Parser(tokens);
             ProgramNode result = parser.parse();
-            System.out.println(result);
-            System.out.println(result.get(globalContext));
+            // System.out.println(result);
+            System.out.println(result.get(globalContext).result.represent());
 
             log.process();
         }

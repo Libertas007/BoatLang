@@ -114,8 +114,6 @@ public abstract class Variable {
         String firstDisplayName = first.value().get(context).displayName;
         String secondDisplayName = target.value().get(context).value.toString();
 
-        System.out.println(first.value().implementations);
-
         List<Implementation> matching = first.value().implementations.stream().filter(implementation -> implementation.matches("REPACK", List.of(firstDisplayName, secondDisplayName))).toList();
 
         if (!matching.isEmpty()) {
