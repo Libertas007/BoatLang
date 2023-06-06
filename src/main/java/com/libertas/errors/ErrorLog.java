@@ -2,6 +2,8 @@ package com.libertas.errors;
 
 import com.libertas.generics.ConsoleColors;
 import com.libertas.generics.Region;
+import com.libertas.generics.RunConfiguration;
+import com.libertas.generics.RunMode;
 
 import java.util.*;
 
@@ -9,6 +11,8 @@ public class ErrorLog {
     private List<BoatError> errors = new ArrayList<>();
     private final static ErrorLog instance = new ErrorLog();
     private String input = "";
+
+    public boolean hasCriticalErrors = false;
 
     private ErrorLog() {
 
@@ -20,10 +24,11 @@ public class ErrorLog {
     
     public void registerError(BoatError error) {
         errors.add(error);
+        if (error.type == ErrorType.CRITICAL) hasCriticalErrors = true;
     }
     public void registerError(BoatError error, boolean process) {
         registerError(error);
-        if (process) {
+        if (process && RunConfiguration.getInstance().mode != RunMode.ANALYZE) {
             process();
         }
     }
@@ -54,6 +59,21 @@ public class ErrorLog {
         if (numOfCritical > 0) {
             System.exit(1);
         }
+    }
+
+    public String getAnalysisReport() {
+        StringJoiner joiner = new StringJoiner("\n");
+
+        for (BoatError error: errors) {
+            if (error.type == ErrorType.CRITICAL) {
+                joiner.add("ERROR::CRITICAL::" + error.name + "::" + error.message + "::" + error.region.analysisRepresentation());
+            } else if (error.type == ErrorType.WARNING) {
+                joiner.add("ERROR::WARNING::" + error.name + "::" + error.message + "::" + error.region.analysisRepresentation());
+            }
+        }
+
+
+        return joiner.toString();
     }
 
     private void printTrace(Region region, ErrorType type) {

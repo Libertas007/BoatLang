@@ -93,7 +93,7 @@ public class Lexer {
             } else if (Character.isWhitespace(currentChar)) {
                 advance();
             } else {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "UnexpectedToken", "Unexpected token '" + currentChar + "'", new Region(line, positionInLine)));
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "UnexpectedCharacter", "Unexpected character '" + currentChar + "'", new Region(line, positionInLine)));
                 advance();
             }
         }

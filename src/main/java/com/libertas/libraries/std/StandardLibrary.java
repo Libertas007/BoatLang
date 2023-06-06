@@ -5,6 +5,8 @@ import com.libertas.errors.ErrorLog;
 import com.libertas.errors.ErrorType;
 import com.libertas.functions.NativeFunction;
 import com.libertas.generics.Region;
+import com.libertas.generics.RunConfiguration;
+import com.libertas.generics.RunMode;
 import com.libertas.libraries.Library;
 import com.libertas.parser.Context;
 import com.libertas.variables.*;
@@ -137,6 +139,10 @@ public class StandardLibrary extends Library {
                 return new None();
             }
 
+            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE) {
+                return arguments.get(0).value();
+            }
+
             System.out.println(arguments.get(0).value().get(context).represent());
 
             return arguments.get(0).value();
@@ -156,6 +162,13 @@ public class StandardLibrary extends Library {
             if (!(arguments.get(1).value() instanceof VariableReference)) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The second argument must be an identifier.", arguments.get(arguments.size() - 1).region()), true);
                 return new None();
+            }
+
+            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE) {
+                Package result = new Package("");
+                result.originatesFromInput = true;
+                context.setVariable(((VariableReference) arguments.get(1).value()).name, result);
+                return result;
             }
 
             Scanner scanner = new Scanner(System.in);
@@ -178,6 +191,10 @@ public class StandardLibrary extends Library {
                 return new None();
             }
 
+            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE) {
+                return new None();
+            }
+
             System.exit(0);
             return new None();
         }));
@@ -193,6 +210,10 @@ public class StandardLibrary extends Library {
                 return new None();
             }
 
+            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE) {
+                return new None();
+            }
+
             System.exit(1);
             return new None();
         }));
@@ -203,6 +224,10 @@ public class StandardLibrary extends Library {
                 return new None();
             }
 
+            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE) {
+                return new None();
+            }
+
             System.exit(1);
             return new None();
         }));
@@ -210,6 +235,10 @@ public class StandardLibrary extends Library {
         functions.put("WAIT", new NativeFunction("WAIT", (context, arguments, region) -> {
             if (arguments.size() != 1) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 parameter, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                return new None();
+            }
+
+            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE) {
                 return new None();
             }
 

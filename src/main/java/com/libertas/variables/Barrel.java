@@ -3,8 +3,11 @@ package com.libertas.variables;
 import com.libertas.errors.BoatError;
 import com.libertas.errors.ErrorLog;
 import com.libertas.errors.ErrorType;
+import com.libertas.functions.Method;
 import com.libertas.functions.NativeFunction;
 import com.libertas.generics.Region;
+import com.libertas.generics.RunConfiguration;
+import com.libertas.generics.RunMode;
 import com.libertas.parser.Context;
 import org.apache.commons.math3.fraction.Fraction;
 
@@ -27,6 +30,10 @@ public class Barrel extends Variable {
     }
 
     private void implement() {
+        setMethod("DECIMAL", new Method("DECIMAL", ((context, self, arguments, region) ->
+                new Package(Double.valueOf(((Fraction) self.get(context).value).doubleValue()).toString())
+        )));
+
         addImplementation(new Implementation("REQUEST", new ArrayList<>(), new NativeFunction("", (context, arguments, region) -> new Barrel(Fraction.ZERO))));
         addImplementation(new Implementation("ADD", List.of("BARREL", "BARREL"), new NativeFunction("", (context, arguments, region) -> {
             if (arguments.get(1).value() instanceof VariableReference) {
@@ -37,7 +44,13 @@ public class Barrel extends Variable {
             return new Barrel(((Fraction) arguments.get(0).value().get(context).value).add((Fraction) arguments.get(1).value().get(context).value));
         })));
         addImplementation(new Implementation("DIVIDE", List.of("BARREL", "BARREL"), new NativeFunction("", (context, arguments, region) -> {
-            if (((Fraction) arguments.get(1).value().get(context).get(context).value).equals(Fraction.ZERO)) {
+            if (arguments.get(1).value().get(context).value.equals(Fraction.ZERO)) {
+
+                if (arguments.get(1).value().get(context).originatesFromInput && RunConfiguration.getInstance().mode == RunMode.ANALYZE) {
+                    ErrorLog.getInstance().registerError(new BoatError(ErrorType.WARNING, "PossibleError", "Division by zero may occur, the variable originates from input.", arguments.get(1).region()));
+                    return new Barrel(Fraction.ONE);
+                }
+
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "DivisionByZero", "Cannot divide by zero", arguments.get(1).region()));
                 return new None();
             }

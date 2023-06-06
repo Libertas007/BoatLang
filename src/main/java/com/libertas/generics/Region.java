@@ -40,6 +40,13 @@ public class Region {
                 ", characters" + charStart +"-" + charEnd;
     }
 
+    public String analysisRepresentation() {
+        if (isEmpty) {
+            return "<>";
+        }
+        return "<l" + lineStart + "c" + charStart + ":l" + lineStart + "c" + charStart + ">";
+    }
+
     public Region combine(Region other) {
         return new Region(Math.min(lineStart, other.lineStart), Math.max(lineEnd, other.lineEnd), Math.min(charStart, other.charStart), Math.max(charEnd, other.charEnd));
     }

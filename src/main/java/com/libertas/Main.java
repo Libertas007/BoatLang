@@ -4,6 +4,8 @@ import com.libertas.errors.BoatError;
 import com.libertas.errors.ErrorLog;
 import com.libertas.errors.ErrorType;
 import com.libertas.generics.Region;
+import com.libertas.generics.RunConfiguration;
+import com.libertas.generics.RunMode;
 import com.libertas.libraries.std.StandardLibrary;
 import com.libertas.parser.Context;
 import com.libertas.parser.Parser;
@@ -13,11 +15,23 @@ import com.libertas.variables.Barrel;
 import com.libertas.lexer.*;
 import org.apache.commons.math3.fraction.Fraction;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringJoiner;
 
 public class Main {
+    public static String input = "";
+    public static final String TEMPLATE = """
+            SAIL ON YACHT
+            
+            BROADCAST "Hello world!"
+            """;
+
     public static void main(String[] args) {
         if (args.length == 0) {
             terminal();
@@ -25,7 +39,8 @@ public class Main {
         }
 
         if (args[0].equals("run")) {
-            // "C:\Users\adams\Documents\Projekty\BoatLang\examples\example.boat"
+
+            RunConfiguration.getInstance().mode = RunMode.FILE;
 
             Context globalContext = new Context();
 
@@ -36,17 +51,93 @@ public class Main {
 
             file.run();
         }
+
+        if (args[0].equals("new") && args.length == 2) {
+            try {
+                create(args[1]);
+            } catch (Exception e) {
+                System.out.println("❌ We were interrupted! Don't do that to us!");
+            }
+        }
+
+        if (args[0].equals("analyze") && args.length == 2) {
+            analyze(args[1]);
+        }
+    }
+
+    public static void analyze(String filename) {
+        RunConfiguration.getInstance().mode = RunMode.ANALYZE;
+
+        String contents = "";
+
+        try {
+            Path path = Paths.get(filename);
+            contents = Files.readString(path);
+        } catch (IOException e) {
+            ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "IOException", e.getMessage(), new Region()), true);
+        }
+
+        input = contents;
+
+        Lexer lexer = new Lexer(contents);
+        ArrayList<Token> tokens = lexer.tokenize();
+
+        StringJoiner joiner = new StringJoiner("\n");
+
+        for (Token token : tokens) {
+            joiner.add(token.analysisRepresentation());
+        }
+
+        System.out.println(joiner);
+
+        if (ErrorLog.getInstance().hasCriticalErrors) {
+            System.out.println(ErrorLog.getInstance().getAnalysisReport());
+            System.exit(0);
+        }
+
+        Parser parser = new Parser(tokens);
+        ProgramNode programNode = parser.parse();
+
+        Context globalContext = new Context();
+
+        StandardLibrary stdLibrary = new StandardLibrary();
+        globalContext.loadContext(stdLibrary.asContext());
+
+        programNode.get(globalContext);
+
+        System.out.println(ErrorLog.getInstance().getAnalysisReport());
+    }
+
+    public static void create(String filename) throws InterruptedException, IOException {
+        RunConfiguration.getInstance().mode = RunMode.CREATE;
+
+        System.out.println("✨ Creating a brand new Boat file for you...");
+        Thread.sleep(500);
+        System.out.println("🏷️ It will be '" + filename + "'!");
+        Thread.sleep(500);
+        System.out.println("🧭 We are getting here...");
+
+        FileWriter fileWriter = new FileWriter(filename);
+
+        fileWriter.write(TEMPLATE);
+
+        fileWriter.close();
+
+        Thread.sleep(500);
+        System.out.println("✅ And it's all done! You are ready to sail off!");
     }
 
     public static void terminal() {
+        RunConfiguration.getInstance().mode = RunMode.TERMINAL;
+
         System.out.println("""
-          oooooo
-       _ooo
-       H
-|======H========|
-\\     BOAT     /
- \\____________/
-~~~~~~~~~~~~~~~~~
+                      oooooo
+                   _ooo
+                   H
+            |======H========|
+            \\     BOAT     /
+             \\____________/
+            ~~~~~~~~~~~~~~~~~
                 """);
         System.out.println("Welcome to Boat terminal!\n\n");
         Scanner scanner = new Scanner(System.in);
@@ -59,6 +150,8 @@ public class Main {
             if (command.equalsIgnoreCase("exit")) {
                 break;
             }
+
+            input = command;
 
             ErrorLog log = ErrorLog.getInstance();
             log.clear();
@@ -73,10 +166,9 @@ public class Main {
                 joiner.add(token.toString());
             }
 
-            // System.out.println(joiner);
+            System.out.println(joiner);
 
             Context globalContext = new Context();
-            globalContext.setVariable("test", new Barrel(new Fraction(69)));
 
             StandardLibrary stdLibrary = new StandardLibrary();
             // System.out.println(stdLibrary.functions);
@@ -87,7 +179,7 @@ public class Main {
 
             Parser parser = new Parser(tokens);
             ProgramNode result = parser.parse();
-            // System.out.println(result);
+            System.out.println(result);
             System.out.println(result.get(globalContext).result.represent());
 
             log.process();

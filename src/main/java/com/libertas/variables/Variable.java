@@ -8,6 +8,9 @@ import com.libertas.functions.BoatFunctionArgumentValue;
 import com.libertas.functions.Method;
 import com.libertas.functions.MethodLambda;
 import com.libertas.generics.Region;
+import com.libertas.generics.RunConfiguration;
+import com.libertas.generics.RunMode;
+import com.libertas.libraries.std.StandardLibrary;
 import com.libertas.parser.Context;
 
 import java.util.ArrayList;
@@ -17,6 +20,7 @@ import java.util.List;
 public abstract class Variable {
     public String displayName;
     public Object value;
+    public boolean originatesFromInput = false;
     protected List<Implementation> implementations;
     protected HashMap<String, Method> methods;
 
@@ -69,7 +73,7 @@ public abstract class Variable {
     public Variable implementDrop(BoatFunctionArgumentValue first, Context context, Region region) {
         String firstDisplayName = first.value().get(context).displayName;
 
-        List<Implementation> matching = first.value().implementations.stream().filter(implementation -> implementation.matches("DROP  ", List.of(firstDisplayName))).toList();
+        List<Implementation> matching = first.value().implementations.stream().filter(implementation -> implementation.matches("DROP", List.of(firstDisplayName))).toList();
 
         if (!matching.isEmpty()) {
             return matching.get(0).run(context, List.of(first), region);
@@ -117,6 +121,15 @@ public abstract class Variable {
         List<Implementation> matching = first.value().implementations.stream().filter(implementation -> implementation.matches("REPACK", List.of(firstDisplayName, secondDisplayName))).toList();
 
         if (!matching.isEmpty()) {
+            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE && first.value().get(context).originatesFromInput) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.WARNING, "PossibleError", "The variable originates from input, repacking may not be possible.", first.region()), true);
+                StandardLibrary std = new StandardLibrary();
+                Variable newValue = std.defaultValue(secondDisplayName, context, region);
+                newValue.originatesFromInput = true;
+                context.setVariable(((VariableReference) first.value()).name, newValue);
+                return newValue;
+            }
+
             return matching.get(0).run(context, List.of(first, target), region);
         }
 

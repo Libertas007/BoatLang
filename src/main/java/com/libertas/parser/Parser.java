@@ -94,7 +94,7 @@ public class Parser {
             return new ArgumentNode(node);
         }
 
-        ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidSyntax", "Expected BARREL, PACKAGE or '('.", currentToken.getRegion()), true);
+        ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidSyntax", "Expected BARREL, PACKAGE, an identifier or '('.", currentToken.getRegion()), true);
         return new ArgumentNode(new None(), new Region());
     }
 
@@ -153,6 +153,7 @@ public class Parser {
     }
 
     private FunctionDefinitionNode makeFunctionDefinition() {
+        Region startRegion = currentToken.getRegion();
         advance();
 
         if (currentToken.getType() != TokenType.IDENTIFIER) {
@@ -160,7 +161,6 @@ public class Parser {
         }
 
         String name = (String) currentToken.getValue().value;
-        Region startRegion = currentToken.getRegion();
 
         List<BoatFunctionArgument> arguments = new ArrayList<>();
 
@@ -213,9 +213,11 @@ public class Parser {
     }
 
     private ImportNode makeImport() {
+        Region startRegion = currentToken.getRegion();
+
         advance();
         if (currentToken.getType() == TokenType.IDENTIFIER || currentToken.getType() == TokenType.PACKAGE) {
-            ImportNode node = new ImportNode(currentToken.getValue(), currentToken.getRegion());
+            ImportNode node = new ImportNode(currentToken.getValue(), startRegion.combine(currentToken.getRegion()));
             advance();
             return node;
         }
@@ -224,9 +226,11 @@ public class Parser {
     }
 
     private ExportNode makeExport() {
+        Region startRegion = currentToken.getRegion();
+
         advance();
         if (currentToken.getType() == TokenType.IDENTIFIER) {
-            return new ExportNode(((Package) currentToken.getValue()).value, currentToken.getRegion());
+            return new ExportNode(((Package) currentToken.getValue()).value, startRegion.combine(currentToken.getRegion()));
         }
         ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidSyntax", "Expected IDENTIFIER.", currentToken.getRegion()), true);
         return new ExportNode("", new Region());
@@ -246,7 +250,7 @@ public class Parser {
             }
         }
 
-        return new CommandNode((String)nameToken.getValue().value, arguments, currentToken.getRegion().combine(arguments.stream().map(argumentNode -> argumentNode.region).toList()));
+        return new CommandNode((String)nameToken.getValue().value, arguments, nameToken.getRegion().combine(arguments.stream().map(argumentNode -> argumentNode.region).toList()));
     }
 
     private LoopNode makeLoop() {
@@ -369,6 +373,9 @@ public class Parser {
     }
 
     private IfNode makeIf() {
+        Region region = currentToken.getRegion();
+
+
         advance();
         ConditionNode condition = makeCondition();
         if (currentToken.getType() != TokenType.BLOCK_START) {
@@ -415,8 +422,6 @@ public class Parser {
         }
 
         advance();
-
-        Region region = condition.region;
 
         region.combine(ifBlock.stream().map(statementNode -> statementNode.region).toList());
         region.combine(elseBlock.stream().map(statementNode -> statementNode.region).toList());
