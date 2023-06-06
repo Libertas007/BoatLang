@@ -102,6 +102,10 @@ public class Parser {
         return token.getType() == TokenType.BARREL || token.getType() == TokenType.PACKAGE || token.getType() == TokenType.IDENTIFIER || token.getType() == TokenType.RETURN_GROUP_START || token.getType() == TokenType.ARGUMENT_KEYWORD;
     }
 
+    private boolean matchesCommandStart(Token token, Token next) {
+        return (token.getType() == TokenType.IDENTIFIER && next.getType() != TokenType.METHOD_ACCESS) || token.getType() == TokenType.KEYWORD;
+    }
+
     private StatementNode makeStatement() {
         if (currentToken.getType() == TokenType.LINE_BREAK || currentToken.getType() == TokenType.END_OF_FILE) {
             Region region = currentToken.getRegion();
@@ -121,8 +125,12 @@ public class Parser {
             return makeLoop();
         }
 
-        if (currentToken.getType() == TokenType.IDENTIFIER || currentToken.getType() == TokenType.KEYWORD) {
+        if (matchesCommandStart(currentToken, tokens.get(pointer + 1))) {
             return makeCommand();
+        }
+
+        if (matchesArgumentStart(currentToken)) {
+            return makeMethodAccess();
         }
 
         ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidSyntax", "Unexpected token '" + currentToken.getValue().value + "'.", currentToken.getRegion()), true);
@@ -232,8 +240,34 @@ public class Parser {
         if (currentToken.getType() == TokenType.IDENTIFIER) {
             return new ExportNode(((Package) currentToken.getValue()).value, startRegion.combine(currentToken.getRegion()));
         }
-        ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidSyntax", "Expected IDENTIFIER.", currentToken.getRegion()), true);
+        ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidSyntax", "Expected an IDENTIFIER.", currentToken.getRegion()), true);
         return new ExportNode("", new Region());
+    }
+
+    private MethodAccessNode makeMethodAccess() {
+        ArgumentNode root = makeArgument();
+        advance();
+
+        if (currentToken.getType() != TokenType.METHOD_ACCESS) {
+            ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidSyntax", "Expected '.'.", currentToken.getRegion()), true);
+            return new MethodAccessNode(new ArgumentNode(new None(), new Region()), "", new ArrayList<>(), new Region());
+        }
+
+        advance();
+        Token nameToken = currentToken;
+        advance();
+
+        List<ArgumentNode> arguments = new ArrayList<>();
+        while (true) {
+            if (matchesArgumentStart(currentToken)) {
+                arguments.add(makeArgument());
+                advance();
+            } else {
+                break;
+            }
+        }
+
+        return new MethodAccessNode(root, (String) nameToken.getValue().value, arguments, nameToken.getRegion().combine(arguments.stream().map(argumentNode -> argumentNode.region).toList()));
     }
 
     private CommandNode makeCommand() {
@@ -250,7 +284,7 @@ public class Parser {
             }
         }
 
-        return new CommandNode((String)nameToken.getValue().value, arguments, nameToken.getRegion().combine(arguments.stream().map(argumentNode -> argumentNode.region).toList()));
+        return new CommandNode((String) nameToken.getValue().value, arguments, nameToken.getRegion().combine(arguments.stream().map(argumentNode -> argumentNode.region).toList()));
     }
 
     private LoopNode makeLoop() {

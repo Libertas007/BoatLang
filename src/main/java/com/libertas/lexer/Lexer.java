@@ -63,7 +63,7 @@ public class Lexer {
         while (position < input.length()) {
             char currentChar = input.charAt(position);
 
-            if (Character.isDigit(currentChar) || currentChar == '.') {
+            if (Character.isDigit(currentChar)) {
                 tokens.add(readBarrel());
             } else if (Character.isLetter(currentChar)) {
                 tokens.add(readIdentifier());
@@ -83,6 +83,9 @@ public class Lexer {
                 advance();
             } else if (currentChar == ':') {
                 tokens.add(new Token(TokenType.BLOCK_START, new Package(":"), new Region(line, positionInLine)));
+                advance();
+            } else if (currentChar == '.') {
+                tokens.add(new Token(TokenType.METHOD_ACCESS, new Package("."), new Region(line, positionInLine)));
                 advance();
             } else if (currentChar == '/') {
                 skipComment();
@@ -178,7 +181,7 @@ public class Lexer {
     private Token readIdentifier() {
         StringBuilder builder = new StringBuilder();
         int start = positionInLine;
-        while (position < input.length() && (Character.isLetterOrDigit(input.charAt(position)) || input.charAt(position) == '.')) {
+        while (position < input.length() && (Character.isLetterOrDigit(input.charAt(position)))) {
             builder.append(input.charAt(position));
             position++;
             positionInLine++;

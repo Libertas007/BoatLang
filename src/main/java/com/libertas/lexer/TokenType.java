@@ -13,7 +13,8 @@ public enum TokenType {
     KEYWORD, // CAN BE AT THE START
     FUNCTION_RETURN, // CAN BE AT THE START
     END_OF_FILE,
-    ARGUMENT_KEYWORD;
+    ARGUMENT_KEYWORD,
+    METHOD_ACCESS,
 }
 
 /*
@@ -23,6 +24,7 @@ public enum TokenType {
     statement:      (
                         ((IDENTIFIER|KEYWORD) Argument*)| ✅
                         FUNCTION_RETURN statement| ✅
+                        Argument METHOD_ACCESS IDENTIFIER
                         if-condition| ✅
                         loop-times| ✅
                         loop-times-as| ✅
