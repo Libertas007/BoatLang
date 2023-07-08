@@ -9,8 +9,10 @@ import com.libertas.generics.Region;
 import com.libertas.lexer.Token;
 import com.libertas.lexer.TokenType;
 import com.libertas.parser.nodes.*;
-import com.libertas.variables.*;
+import com.libertas.variables.None;
 import com.libertas.variables.Package;
+import com.libertas.variables.TypeName;
+import com.libertas.variables.VariableReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,6 +70,7 @@ public class Parser {
 
         return new ProgramNode(definitionNodes, statementNodes);
     }
+
     private void advance() {
         pointer++;
         if (pointer < tokens.size()) {
@@ -75,12 +78,28 @@ public class Parser {
         }
     }
 
-    private ArgumentNode makeArgument() {
-        if (currentToken.getType() == TokenType.BARREL || currentToken.getType() == TokenType.PACKAGE) return new ArgumentNode(currentToken.getValue(), currentToken.getRegion());
-        if (currentToken.getType() == TokenType.ARGUMENT_KEYWORD) return new ArgumentNode(currentToken.getValue(), currentToken.getRegion());
+    private ArgumentNode makeArgument(boolean allowProperties) {
+        if (currentToken.getType() == TokenType.BARREL || currentToken.getType() == TokenType.PACKAGE)
+            return new ArgumentNode(currentToken.getValue(), currentToken.getRegion());
+        if (currentToken.getType() == TokenType.ARGUMENT_KEYWORD)
+            return new ArgumentNode(currentToken.getValue(), currentToken.getRegion());
         if (currentToken.getType() == TokenType.IDENTIFIER) {
             if (Arrays.stream(types).toList().contains(currentToken.getValue().value.toString())) {
                 return new ArgumentNode(new TypeName(currentToken.getValue().value.toString()), currentToken.getRegion());
+            }
+
+            if (tokens.get(pointer + 1).getType() == TokenType.METHOD_ACCESS && allowProperties) {
+                ArgumentNode root = new ArgumentNode(new VariableReference((String) currentToken.getValue().value, new VariableAccessNode((String) currentToken.getValue().value, currentToken.getRegion())), currentToken.getRegion());
+                advance();
+                advance();
+
+                if (currentToken.getType() != TokenType.IDENTIFIER) {
+                    ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidSyntax", "Expected an identifier.", currentToken.getRegion()), true);
+                }
+
+                String name = currentToken.getValue().value.toString();
+
+                return new ArgumentNode(new PropertyAccessNode(root, name, root.region.combine(currentToken.getRegion())));
             }
             return new ArgumentNode(new VariableReference((String) currentToken.getValue().value, new VariableAccessNode((String) currentToken.getValue().value, currentToken.getRegion())), currentToken.getRegion());
         }
@@ -245,7 +264,7 @@ public class Parser {
     }
 
     private MethodAccessNode makeMethodAccess() {
-        ArgumentNode root = makeArgument();
+        ArgumentNode root = makeArgument(false);
         advance();
 
         if (currentToken.getType() != TokenType.METHOD_ACCESS) {
@@ -260,7 +279,7 @@ public class Parser {
         List<ArgumentNode> arguments = new ArrayList<>();
         while (true) {
             if (matchesArgumentStart(currentToken)) {
-                arguments.add(makeArgument());
+                arguments.add(makeArgument(true));
                 advance();
             } else {
                 break;
@@ -277,7 +296,7 @@ public class Parser {
         List<ArgumentNode> arguments = new ArrayList<>();
         while (true) {
             if (matchesArgumentStart(currentToken)) {
-                arguments.add(makeArgument());
+                arguments.add(makeArgument(true));
                 advance();
             } else {
                 break;
@@ -293,7 +312,7 @@ public class Parser {
             return makeLoopIf();
         }
 
-        ArgumentNode times = makeArgument();
+        ArgumentNode times = makeArgument(true);
         advance();
 
         if (currentToken.getType() != TokenType.KEYWORD || !currentToken.getValue().value.equals("TIMES")) {
@@ -464,14 +483,14 @@ public class Parser {
     }
 
     private ConditionNode makeCondition() {
-        ArgumentNode first = makeArgument();
+        ArgumentNode first = makeArgument(true);
         advance();
         if (currentToken.getType() != TokenType.OPERATOR) {
             ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidSyntax", "Expected '==', '!=', '<', '>', '<=' or '>='.", currentToken.getRegion()), true);
         }
         String operator = currentToken.getValue().value.toString();
         advance();
-        ArgumentNode second = makeArgument();
+        ArgumentNode second = makeArgument(true);
         advance();
         return new ConditionNode(first, operator, second);
     }

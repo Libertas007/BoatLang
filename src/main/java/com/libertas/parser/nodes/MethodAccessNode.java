@@ -14,7 +14,7 @@ public class MethodAccessNode extends StatementNode {
     public String method;
     public List<ArgumentNode> arguments;
 
-
+    
     public MethodAccessNode(ArgumentNode root, String method, List<ArgumentNode> arguments, Region region) {
         super(region);
         this.root = root;
@@ -33,6 +33,6 @@ public class MethodAccessNode extends StatementNode {
 
     @Override
     public String toString() {
-        return "[MethodAccessNode: " + root + " " + method + " " + arguments + "]";
+        return "[MethodAccessNode: " + root + "." + method + " " + arguments + "]";
     }
 }

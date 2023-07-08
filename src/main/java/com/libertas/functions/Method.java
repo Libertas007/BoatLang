@@ -19,7 +19,7 @@ public class Method extends BoatFunction {
 
     @Override
     public NodeResult run(Context context, List<BoatFunctionArgumentValue> values, Region region) {
-        Variable self = values.remove(0).value();
+        Variable self = values.get(0).value();
 
         return new NodeResult(function.run(context, self, values, region));
     }

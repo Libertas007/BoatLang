@@ -3,10 +3,8 @@ package com.libertas.variables;
 import com.libertas.errors.BoatError;
 import com.libertas.errors.ErrorLog;
 import com.libertas.errors.ErrorType;
-import com.libertas.functions.BoatFunction;
 import com.libertas.functions.BoatFunctionArgumentValue;
 import com.libertas.functions.Method;
-import com.libertas.functions.MethodLambda;
 import com.libertas.generics.Region;
 import com.libertas.generics.RunConfiguration;
 import com.libertas.generics.RunMode;
@@ -23,12 +21,14 @@ public abstract class Variable {
     public boolean originatesFromInput = false;
     protected List<Implementation> implementations;
     protected HashMap<String, Method> methods;
+    protected HashMap<String, Variable> properties;
 
     public Variable(Object value, String displayName) {
         this.value = value;
         this.displayName = displayName;
         implementations = new ArrayList<>();
         methods = new HashMap<>();
+        properties = new HashMap<>();
     }
 
     public Variable get(Context context) {
@@ -53,6 +53,14 @@ public abstract class Variable {
         return methods.get(name).run(context, this, arguments, region).result;
     }
 
+    public void setProperty(String name, Variable value) {
+        properties.put(name, value);
+    }
+
+    public Variable getProperty(String name) {
+        return properties.get(name);
+    }
+
     public void addImplementation(Implementation implementation) {
         implementations.add(implementation);
     }
@@ -70,6 +78,7 @@ public abstract class Variable {
         ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "MethodNotImplemented", "The method ADD is not implemented for " + firstDisplayName + " " + secondDisplayName + ".", region), true);
         return new None();
     }
+
     public Variable implementDrop(BoatFunctionArgumentValue first, Context context, Region region) {
         String firstDisplayName = first.value().get(context).displayName;
 
@@ -88,6 +97,7 @@ public abstract class Variable {
         context.dropVariable(((VariableReference) first.value()).name);
         return new None();
     }
+
     public Variable implementDivide(BoatFunctionArgumentValue first, BoatFunctionArgumentValue second, Context context, Region region) {
         String firstDisplayName = first.value().get(context).displayName;
         String secondDisplayName = second.value().get(context).displayName;
@@ -101,6 +111,7 @@ public abstract class Variable {
         ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "MethodNotImplemented", "The method DIVIDE is not implemented for " + firstDisplayName + " " + secondDisplayName + ".", region), true);
         return new None();
     }
+
     public Variable implementMultiply(BoatFunctionArgumentValue first, BoatFunctionArgumentValue second, Context context, Region region) {
         String firstDisplayName = first.value().get(context).displayName;
         String secondDisplayName = second.value().get(context).displayName;
@@ -114,6 +125,7 @@ public abstract class Variable {
         ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "MethodNotImplemented", "The method MULTIPLY is not implemented for " + firstDisplayName + " " + secondDisplayName + ".", region), true);
         return new None();
     }
+
     public Variable implementRepack(BoatFunctionArgumentValue first, BoatFunctionArgumentValue target, Context context, Region region) {
         String firstDisplayName = first.value().get(context).displayName;
         String secondDisplayName = target.value().get(context).value.toString();
@@ -136,6 +148,7 @@ public abstract class Variable {
         ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "MethodNotImplemented", "The method REPACK is not implemented for " + firstDisplayName + " " + secondDisplayName + ".", region), true);
         return new None();
     }
+
     public Variable implementRequest(Context context, Region region) {
         List<Implementation> matching = implementations.stream().filter(implementation -> implementation.matches("REQUEST", new ArrayList<>())).toList();
 
@@ -146,6 +159,7 @@ public abstract class Variable {
         ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "MethodNotImplemented", "The method REQUEST is not implemented!", region), true);
         return new None();
     }
+
     public Variable implementReturn(BoatFunctionArgumentValue first, Context context, Region region) {
         String firstDisplayName = first.value().get(context).displayName;
 
@@ -158,6 +172,7 @@ public abstract class Variable {
         // ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "MethodNotImplemented", "The method RETURN is not implemented!", new Region(0, 0, 0, 0)), true);
         return implementDrop(first, context, region);
     }
+
     public Variable implementSubtract(BoatFunctionArgumentValue first, BoatFunctionArgumentValue second, Context context, Region region) {
         String firstDisplayName = first.value().get(context).displayName;
         String secondDisplayName = second.value().get(context).displayName;

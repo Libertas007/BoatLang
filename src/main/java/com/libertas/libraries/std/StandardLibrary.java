@@ -3,14 +3,14 @@ package com.libertas.libraries.std;
 import com.libertas.errors.BoatError;
 import com.libertas.errors.ErrorLog;
 import com.libertas.errors.ErrorType;
-import com.libertas.functions.NativeFunction;
+import com.libertas.functions.Method;
 import com.libertas.generics.Region;
 import com.libertas.generics.RunConfiguration;
 import com.libertas.generics.RunMode;
 import com.libertas.libraries.Library;
 import com.libertas.parser.Context;
-import com.libertas.variables.*;
 import com.libertas.variables.Package;
+import com.libertas.variables.*;
 import org.apache.commons.math3.fraction.Fraction;
 
 import java.util.ArrayList;
@@ -19,10 +19,10 @@ import java.util.Scanner;
 
 public class StandardLibrary extends Library {
     public StandardLibrary() {
-        variables.put("YES", new Switch(true));
-        variables.put("NO", new Switch(false));
+        setProperty("YES", new Switch(true));
+        setProperty("NO", new Switch(false));
 
-        functions.put("ADD", new NativeFunction("ADD", (context, arguments, region) -> {
+        setMethod("ADD", new Method("ADD", (context, self, arguments, region) -> {
             if (arguments.size() != 3) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 3 parameters, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
                 return new None();
@@ -36,7 +36,7 @@ public class StandardLibrary extends Library {
             return arguments.get(2).value().implementAdd(arguments.get(0), arguments.get(2), context, region);
         }));
 
-        functions.put("SUBTRACT", new NativeFunction("SUBTRACT", (context, arguments, region) -> {
+        setMethod("SUBTRACT", new Method("SUBTRACT", (context, self, arguments, region) -> {
             if (arguments.size() != 3) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 3 parameters, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
                 return new None();
@@ -50,7 +50,7 @@ public class StandardLibrary extends Library {
             return arguments.get(2).value().implementSubtract(arguments.get(0), arguments.get(2), context, region);
         }));
 
-        functions.put("MULTIPLY", new NativeFunction("MULTIPLY", (context, arguments, region) -> {
+        setMethod("MULTIPLY", new Method("MULTIPLY", (context, self, arguments, region) -> {
             if (arguments.size() != 3) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 3 parameters, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
                 return new None();
@@ -64,7 +64,7 @@ public class StandardLibrary extends Library {
             return arguments.get(0).value().implementMultiply(arguments.get(0), arguments.get(2), context, region);
         }));
 
-        functions.put("DIVIDE", new NativeFunction("DIVIDE", (context, arguments, region) -> {
+        setMethod("DIVIDE", new Method("DIVIDE", (context, self, arguments, region) -> {
             if (arguments.size() != 3) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 3 parameters, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
                 return new None();
@@ -78,7 +78,7 @@ public class StandardLibrary extends Library {
             return arguments.get(0).value().implementDivide(arguments.get(0), arguments.get(2), context, region);
         }));
 
-        functions.put("REPACK", new NativeFunction("REPACK", (context, arguments, region) -> {
+        setMethod("REPACK", new Method("REPACK", (context, self, arguments, region) -> {
             if (arguments.size() != 3) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 3 parameters, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
                 return new None();
@@ -92,7 +92,7 @@ public class StandardLibrary extends Library {
             return arguments.get(0).value().implementRepack(arguments.get(0), arguments.get(2), context, region);
         }));
 
-        functions.put("SET", new NativeFunction("SET", (context, arguments, region) -> {
+        setMethod("SET", new Method("SET", (context, self, arguments, region) -> {
             if (arguments.size() != 3) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 3 parameters, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
                 return new None();
@@ -112,7 +112,7 @@ public class StandardLibrary extends Library {
             return context.getVariable(((VariableReference) arguments.get(0).value()).name, arguments.get(0).region());
         }));
 
-        functions.put("REQUEST", new NativeFunction("REQUEST", (context, arguments, region) -> {
+        setMethod("REQUEST", new Method("REQUEST", (context, self, arguments, region) -> {
             if (arguments.size() != 2) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 2 parameters, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
                 return new None();
@@ -133,7 +133,7 @@ public class StandardLibrary extends Library {
             return context.getVariable(((VariableReference) arguments.get(1).value()).name, arguments.get(1).region());
         }));
 
-        functions.put("BROADCAST", new NativeFunction("BROADCAST", (context, arguments, region) -> {
+        setMethod("BROADCAST", new Method("BROADCAST", (context, self, arguments, region) -> {
             if (arguments.size() != 1) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 parameter, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
                 return new None();
@@ -148,7 +148,7 @@ public class StandardLibrary extends Library {
             return arguments.get(0).value();
         }));
 
-        functions.put("LISTEN", new NativeFunction("LISTEN", (context, arguments, region) -> {
+        setMethod("LISTEN", new Method("LISTEN", (context, self, arguments, region) -> {
             if (arguments.size() != 2) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 2 parameters, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
                 return new None();
@@ -180,7 +180,7 @@ public class StandardLibrary extends Library {
             return context.getVariable(((VariableReference) arguments.get(1).value()).name, arguments.get(1).region());
         }));
 
-        functions.put("ARRIVE", new NativeFunction("ARRIVE", (context, arguments, region) -> {
+        setMethod("ARRIVE", new Method("ARRIVE", (context, self, arguments, region) -> {
             if (arguments.size() != 2) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 2 parameters, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
                 return new None();
@@ -199,7 +199,7 @@ public class StandardLibrary extends Library {
             return new None();
         }));
 
-        functions.put("CRASH", new NativeFunction("CRASH", (context, arguments, region) -> {
+        setMethod("CRASH", new Method("CRASH", (context, self, arguments, region) -> {
             if (arguments.size() != 2) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 2 parameters, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
                 return new None();
@@ -218,7 +218,7 @@ public class StandardLibrary extends Library {
             return new None();
         }));
 
-        functions.put("SINK", new NativeFunction("SINK", (context, arguments, region) -> {
+        setMethod("SINK", new Method("SINK", (context, self, arguments, region) -> {
             if (arguments.size() != 0) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 0 parameters, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
                 return new None();
@@ -232,7 +232,7 @@ public class StandardLibrary extends Library {
             return new None();
         }));
 
-        functions.put("WAIT", new NativeFunction("WAIT", (context, arguments, region) -> {
+        setMethod("WAIT", new Method("WAIT", (context, self, arguments, region) -> {
             if (arguments.size() != 1) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 parameter, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
                 return new None();
@@ -280,24 +280,24 @@ public class StandardLibrary extends Library {
 }
 
 /*
-* functions:
-*
-* REPACK ✅
-* REQUEST ✅
-* RETURN ✅
-* DROP ✅
-* SET ✅
-*
-* ADD ✅
-* SUBTRACT ✅
-* DIVIDE ✅
-* MULTIPLY ✅
-*
-* BROADCAST ✅
-* LISTEN ✅
-*
-* ARRIVE ✅
-* CRASH ✅
-* SINK ✅
-*
-* */
+ * functions:
+ *
+ * REPACK ✅
+ * REQUEST ✅
+ * RETURN ✅
+ * DROP ✅
+ * SET ✅
+ *
+ * ADD ✅
+ * SUBTRACT ✅
+ * DIVIDE ✅
+ * MULTIPLY ✅
+ *
+ * BROADCAST ✅
+ * LISTEN ✅
+ *
+ * ARRIVE ✅
+ * CRASH ✅
+ * SINK ✅
+ *
+ * */

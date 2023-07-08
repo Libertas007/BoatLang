@@ -6,7 +6,8 @@ import com.libertas.errors.ErrorType;
 import com.libertas.functions.BoatFunction;
 import com.libertas.functions.BoatFunctionArgumentValue;
 import com.libertas.generics.Region;
-import com.libertas.variables.*;
+import com.libertas.variables.None;
+import com.libertas.variables.Variable;
 
 import java.util.*;
 
@@ -88,6 +89,7 @@ public class Context {
     public void setVariable(String name, Variable value) {
         variables.put(name, value);
     }
+
     public void dropVariable(String name) {
         variables.remove(name);
     }
@@ -112,7 +114,7 @@ public class Context {
                 parts.remove(0);
                 StringJoiner joiner = new StringJoiner(".");
 
-                for (String part: parts) {
+                for (String part : parts) {
                     joiner.add(part);
                 }
 

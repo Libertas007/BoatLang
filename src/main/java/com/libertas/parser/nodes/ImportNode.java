@@ -19,7 +19,7 @@ public class ImportNode extends DefinitionNode {
     public NodeResult get(Context context) {
 
         if (toImport.get(context).value.equals("MATH")) {
-            context.loadContext(new MathLibrary().asContext());
+            context.setVariable("MATH", new MathLibrary());
         }
 
         return new NodeResult(new Switch(true));
