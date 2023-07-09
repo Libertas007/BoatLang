@@ -15,6 +15,9 @@ public enum TokenType {
     END_OF_FILE,
     ARGUMENT_KEYWORD,
     METHOD_ACCESS,
+    LIST_START,
+    LIST_END,
+    SEPARATOR,
 }
 
 /*
@@ -74,6 +77,7 @@ public enum TokenType {
                     PACKAGE| ✅
                     IDENTIFIER| ✅
                     (RETURN_GROUP_START statement RETURN_VALUE_END) ✅
+                    LIST_START (Argument SEPARATOR)* LIST_END
                   )
     Condition   = (
                     (Argument OPERATOR Argument)| ✅

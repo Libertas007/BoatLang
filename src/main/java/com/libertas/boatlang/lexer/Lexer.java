@@ -87,6 +87,15 @@ public class Lexer {
             } else if (currentChar == '.') {
                 tokens.add(new Token(TokenType.METHOD_ACCESS, new Package("."), new Region(line, positionInLine)));
                 advance();
+            } else if (currentChar == '[') {
+                tokens.add(new Token(TokenType.LIST_START, new Package("["), new Region(line, positionInLine)));
+                advance();
+            } else if (currentChar == ']') {
+                tokens.add(new Token(TokenType.LIST_END, new Package("]"), new Region(line, positionInLine)));
+                advance();
+            } else if (currentChar == ',') {
+                tokens.add(new Token(TokenType.SEPARATOR, new Package(","), new Region(line, positionInLine)));
+                advance();
             } else if (currentChar == '/') {
                 skipComment();
                 advance();
