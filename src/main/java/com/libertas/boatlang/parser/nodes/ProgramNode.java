@@ -8,24 +8,19 @@ import java.util.List;
 import java.util.StringJoiner;
 
 public class ProgramNode extends Node {
-    private List<DefinitionNode> definitions;
-    private List<StatementNode> statements;
+    private List<Node> nodes;
 
-    public ProgramNode(List<DefinitionNode> definitions, List<StatementNode> statements) {
+    public ProgramNode(List<Node> nodes) {
         super(new Region());
-        this.definitions = definitions;
-        this.statements = statements;
+        this.nodes = nodes;
     }
 
     @Override
     public NodeResult get(Context context) {
-        for (DefinitionNode definition : definitions) {
-            definition.get(context);
+        for (Node node : nodes) {
+            node.get(context);
         }
-        for (StatementNode statement : statements) {
-            statement.get(context);
-        }
-        return statements.get(statements.size() - 1).get(context);
+        return nodes.get(nodes.size() - 1).get(context);
     }
 
     @Override
@@ -33,16 +28,10 @@ public class ProgramNode extends Node {
         StringJoiner joiner = new StringJoiner("\n\t");
 
         joiner.add("");
-        joiner.add("DEFINITIONS:");
+        joiner.add("NODES:");
 
-        for (DefinitionNode definitionNode : definitions) {
-            joiner.add(definitionNode.toString());
-        }
-
-        joiner.add("STATEMENTS:");
-
-        for (StatementNode statementNode : statements) {
-            joiner.add(statementNode.toString());
+        for (Node node : nodes) {
+            joiner.add(node.toString());
         }
 
         return "[ProgramNode:" + joiner + "\n]";

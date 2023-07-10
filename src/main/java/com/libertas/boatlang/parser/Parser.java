@@ -37,8 +37,7 @@ public class Parser {
     }
 
     public ProgramNode parse() {
-        List<StatementNode> statementNodes = new ArrayList<>();
-        List<DefinitionNode> definitionNodes = new ArrayList<>();
+        List<Node> nodes = new ArrayList<>();
 
         boolean makeStatements = false;
 
@@ -52,23 +51,23 @@ public class Parser {
                 }
             }
 
-            /*if (currentToken.getType() == TokenType.IDENTIFIER && currentToken.getValue().value.equals("ARRIVE")) {
+            if (currentToken.getType() == TokenType.IDENTIFIER && currentToken.getValue().value.equals("ARRIVE")) {
                 advance();
                 if (currentToken.getType() == TokenType.ARGUMENT_KEYWORD && currentToken.getValue().value.equals("AT")) {
                     advance();
                     advance();
                     makeStatements = false;
                 }
-            }*/
+            }
 
             if (makeStatements) {
-                statementNodes.add(makeStatement());
+                nodes.add(makeStatement());
             } else {
-                definitionNodes.add(makeDefinition());
+                nodes.add(makeDefinition());
             }
         }
 
-        return new ProgramNode(definitionNodes, statementNodes);
+        return new ProgramNode(nodes);
     }
 
     private void advance() {
@@ -274,7 +273,9 @@ public class Parser {
 
         advance();
         if (currentToken.getType() == TokenType.IDENTIFIER) {
-            return new ExportNode(((Package) currentToken.getValue()).value, startRegion.combine(currentToken.getRegion()));
+            ExportNode node = new ExportNode(((Package) currentToken.getValue()).value, startRegion.combine(currentToken.getRegion()));
+            advance();
+            return node;
         }
         ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidSyntax", "Expected an IDENTIFIER.", currentToken.getRegion()), true);
         return new ExportNode("", new Region());
