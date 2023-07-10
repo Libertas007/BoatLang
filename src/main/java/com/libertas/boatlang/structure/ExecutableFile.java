@@ -4,6 +4,8 @@ import com.libertas.boatlang.errors.BoatError;
 import com.libertas.boatlang.errors.ErrorLog;
 import com.libertas.boatlang.errors.ErrorType;
 import com.libertas.boatlang.generics.Region;
+import com.libertas.boatlang.generics.RunConfiguration;
+import com.libertas.boatlang.generics.RunMode;
 import com.libertas.boatlang.lexer.Lexer;
 import com.libertas.boatlang.lexer.Token;
 import com.libertas.boatlang.parser.Context;
@@ -61,5 +63,14 @@ public class ExecutableFile {
 
     public NodeResult run() {
         return program.get(context);
+    }
+
+    public Context getExportedContext() {
+        RunConfiguration configuration = RunConfiguration.getInstance();
+
+        configuration.mode = RunMode.ANALYZE;
+
+        program.get(context);
+        return context;
     }
 }
