@@ -133,8 +133,11 @@ public abstract class Variable {
         List<Implementation> matching = first.value().implementations.stream().filter(implementation -> implementation.matches("REPACK", List.of(firstDisplayName, secondDisplayName))).toList();
 
         if (!matching.isEmpty()) {
-            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE && first.value().get(context).originatesFromInput) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.WARNING, "PossibleError", "The variable originates from input, repacking may not be possible.", first.region()), true);
+            if ((RunConfiguration.getInstance().mode == RunMode.ANALYZE || RunConfiguration.getInstance().mode == RunMode.IMPORT) && first.value().get(context).originatesFromInput) {
+                if (RunConfiguration.getInstance().mode == RunMode.ANALYZE) {
+                    ErrorLog.getInstance().registerError(new BoatError(ErrorType.WARNING, "PossibleError", "The variable originates from input, repacking may not be possible.", first.region()), true);
+                }
+
                 StandardLibrary std = new StandardLibrary();
                 Variable newValue = std.defaultValue(secondDisplayName, context, region);
                 newValue.originatesFromInput = true;

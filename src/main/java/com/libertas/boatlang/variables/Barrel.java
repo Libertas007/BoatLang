@@ -46,9 +46,15 @@ public class Barrel extends Variable {
         addImplementation(new Implementation("DIVIDE", List.of("BARREL", "BARREL"), new NativeFunction("", (context, arguments, region) -> {
             if (arguments.get(1).value().get(context).value.equals(Fraction.ZERO)) {
 
-                if (arguments.get(1).value().get(context).originatesFromInput && RunConfiguration.getInstance().mode == RunMode.ANALYZE) {
-                    ErrorLog.getInstance().registerError(new BoatError(ErrorType.WARNING, "PossibleError", "Division by zero may occur, the variable originates from input.", arguments.get(1).region()));
-                    return new Barrel(Fraction.ONE);
+                if (arguments.get(1).value().get(context).originatesFromInput) {
+                    if (RunConfiguration.getInstance().mode == RunMode.ANALYZE) {
+                        ErrorLog.getInstance().registerError(new BoatError(ErrorType.WARNING, "PossibleError", "Division by zero may occur, the variable originates from input.", arguments.get(1).region()));
+                        return new Barrel(Fraction.ONE);
+                    }
+
+                    if (RunConfiguration.getInstance().mode == RunMode.IMPORT) {
+                        return new Barrel(Fraction.ONE);
+                    }
                 }
 
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "DivisionByZero", "Cannot divide by zero", arguments.get(1).region()));

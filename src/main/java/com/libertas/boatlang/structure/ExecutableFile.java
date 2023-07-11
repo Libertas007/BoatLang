@@ -68,9 +68,14 @@ public class ExecutableFile {
     public Context getExportedContext() {
         RunConfiguration configuration = RunConfiguration.getInstance();
 
-        configuration.mode = RunMode.ANALYZE;
+        RunMode previous = RunMode.values()[configuration.mode.ordinal()];
+
+        configuration.mode = RunMode.IMPORT;
 
         program.get(context);
+
+        configuration.mode = previous;
+
         return context;
     }
 }

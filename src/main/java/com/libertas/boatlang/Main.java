@@ -49,8 +49,6 @@ public class Main {
             ExecutableFile file = new ExecutableFile(args[1], globalContext);
 
             file.run();
-
-            // System.out.println(file.getExportedContext().exportVariables());
         }
 
         if (args[0].equals("new") && args.length == 2) {

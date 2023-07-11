@@ -167,14 +167,23 @@ public class Lexer {
             }
 
             if (escapeNext) {
+                if (currentChar == 'n') {
+                    builder.append("\n");
+                }
+
+                if (currentChar == '\\') {
+                    builder.append("\\");
+                }
+            }
+
+            if (currentChar == '\\' && !escapeNext) {
+                escapeNext = true;
+            } else if (!escapeNext) {
+                builder.append(currentChar);
+            } else {
                 escapeNext = false;
             }
 
-            if (currentChar == '\\') {
-                escapeNext = true;
-            } else {
-                builder.append(currentChar);
-            }
 
             advance();
 

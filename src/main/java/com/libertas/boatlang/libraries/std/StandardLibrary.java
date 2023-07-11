@@ -139,7 +139,7 @@ public class StandardLibrary extends Library {
                 return new None();
             }
 
-            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE) {
+            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE || RunConfiguration.getInstance().mode == RunMode.IMPORT) {
                 return arguments.get(0).value();
             }
 
@@ -164,7 +164,7 @@ public class StandardLibrary extends Library {
                 return new None();
             }
 
-            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE) {
+            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE || RunConfiguration.getInstance().mode == RunMode.IMPORT) {
                 com.libertas.boatlang.variables.Package result = new com.libertas.boatlang.variables.Package("");
                 result.originatesFromInput = true;
                 context.setVariable(((VariableReference) arguments.get(1).value()).name, result);
@@ -191,7 +191,7 @@ public class StandardLibrary extends Library {
                 return new None();
             }
 
-            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE) {
+            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE || RunConfiguration.getInstance().mode == RunMode.IMPORT) {
                 return new None();
             }
 
@@ -210,7 +210,7 @@ public class StandardLibrary extends Library {
                 return new None();
             }
 
-            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE) {
+            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE || RunConfiguration.getInstance().mode == RunMode.IMPORT) {
                 return new None();
             }
 
@@ -224,7 +224,7 @@ public class StandardLibrary extends Library {
                 return new None();
             }
 
-            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE) {
+            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE || RunConfiguration.getInstance().mode == RunMode.IMPORT) {
                 return new None();
             }
 
@@ -238,7 +238,7 @@ public class StandardLibrary extends Library {
                 return new None();
             }
 
-            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE) {
+            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE || RunConfiguration.getInstance().mode == RunMode.IMPORT) {
                 return new None();
             }
 

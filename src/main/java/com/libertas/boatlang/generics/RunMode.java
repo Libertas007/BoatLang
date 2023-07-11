@@ -6,4 +6,5 @@ public enum RunMode {
     ANALYZE,
     CREATE,
     DEBUG,
+    IMPORT,
 }
