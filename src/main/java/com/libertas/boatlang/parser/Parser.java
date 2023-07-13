@@ -11,25 +11,15 @@ import com.libertas.boatlang.lexer.TokenType;
 import com.libertas.boatlang.parser.nodes.*;
 import com.libertas.boatlang.variables.None;
 import com.libertas.boatlang.variables.Package;
-import com.libertas.boatlang.variables.TypeName;
 import com.libertas.boatlang.variables.VariableReference;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Parser {
     private final ArrayList<Token> tokens;
     private Token currentToken;
     private int pointer = -1;
-
-    public final String[] types = {
-            "BARREL",
-            "PACKAGE",
-            "SWITCH",
-            "NONE",
-            "LIST",
-    };
 
     public Parser(ArrayList<Token> tokens) {
         this.tokens = tokens;
@@ -83,9 +73,9 @@ public class Parser {
         if (currentToken.getType() == TokenType.ARGUMENT_KEYWORD)
             return new ArgumentNode(currentToken.getValue(), currentToken.getRegion());
         if (currentToken.getType() == TokenType.IDENTIFIER) {
-            if (Arrays.stream(types).toList().contains(currentToken.getValue().value.toString())) {
+            /*if (Arrays.stream(types).toList().contains(currentToken.getValue().value.toString())) {
                 return new ArgumentNode(new TypeName(currentToken.getValue().value.toString()), currentToken.getRegion());
-            }
+            }*/
 
             if (tokens.get(pointer + 1).getType() == TokenType.METHOD_ACCESS && allowProperties) {
                 ArgumentNode root = new ArgumentNode(new VariableReference((String) currentToken.getValue().value, new VariableAccessNode((String) currentToken.getValue().value, currentToken.getRegion())), currentToken.getRegion());

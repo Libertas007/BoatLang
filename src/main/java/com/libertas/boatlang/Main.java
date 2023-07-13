@@ -180,6 +180,7 @@ public class Main {
             ProgramNode result = parser.parse();
             System.out.println(result);
             System.out.println(result.get(globalContext).result.represent());
+            System.out.println(globalContext.getTypes());
 
             log.process();
         }

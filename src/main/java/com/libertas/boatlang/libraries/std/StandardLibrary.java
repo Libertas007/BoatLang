@@ -19,6 +19,12 @@ import java.util.Scanner;
 
 public class StandardLibrary extends Library {
     public StandardLibrary() {
+        types.put("BARREL", new Barrel(Fraction.ZERO));
+        types.put("PACKAGE", new Package(""));
+        types.put("SWITCH", new Switch(false));
+        types.put("LIST", new BoatList(new ArrayList<>()));
+        types.put("NONE", new None());
+
         setProperty("YES", new Switch(true));
         setProperty("NO", new Switch(false));
 
@@ -118,7 +124,13 @@ public class StandardLibrary extends Library {
                 return new None();
             }
 
-            if (!(arguments.get(0).value() instanceof TypeName)) {
+
+            if (!(arguments.get(0).value() instanceof VariableReference typeName)) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The first argument must be a type name.", arguments.get(arguments.size() - 1).region()), true);
+                return new None();
+            }
+
+            if (!context.existsType(typeName.name)) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The first argument must be a type name.", arguments.get(arguments.size() - 1).region()), true);
                 return new None();
             }
@@ -128,7 +140,7 @@ public class StandardLibrary extends Library {
                 return new None();
             }
 
-            context.setVariable(((VariableReference) arguments.get(1).value()).name, defaultValue(arguments.get(0).value().value.toString(), context, region));
+            context.setVariable(((VariableReference) arguments.get(1).value()).name, context.getDefaultValue(typeName.name, region));
 
             return context.getVariable(((VariableReference) arguments.get(1).value()).name, arguments.get(1).region());
         }));

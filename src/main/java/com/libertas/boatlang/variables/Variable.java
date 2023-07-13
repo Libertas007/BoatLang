@@ -128,7 +128,13 @@ public abstract class Variable {
 
     public Variable implementRepack(BoatFunctionArgumentValue first, BoatFunctionArgumentValue target, Context context, Region region) {
         String firstDisplayName = first.value().get(context).displayName;
-        String secondDisplayName = target.value().get(context).value.toString();
+
+        if (!(target.value() instanceof VariableReference)) {
+            ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The first argument must be a type name.", target.region()), true);
+            return new None();
+        }
+
+        String secondDisplayName = ((VariableReference) target.value()).name;
 
         List<Implementation> matching = first.value().implementations.stream().filter(implementation -> implementation.matches("REPACK", List.of(firstDisplayName, secondDisplayName))).toList();
 

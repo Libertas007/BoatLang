@@ -85,7 +85,12 @@ public class Barrel extends Variable {
             return new Barrel(((Fraction) arguments.get(1).value().get(context).value).subtract((Fraction) arguments.get(0).value().get(context).value));
         })));
         addImplementation(new Implementation("REPACK", List.of("BARREL", "PACKAGE"), new NativeFunction("", (context, arguments, region) -> {
-            if (!(arguments.get(1).value() instanceof TypeName)) {
+            if (!(arguments.get(1).value() instanceof VariableReference typeName)) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The last argument must be a type name.", arguments.get(arguments.size() - 1).region()), true);
+                return new None();
+            }
+
+            if (!context.existsType(typeName.name)) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The last argument must be a type name.", arguments.get(arguments.size() - 1).region()), true);
                 return new None();
             }
