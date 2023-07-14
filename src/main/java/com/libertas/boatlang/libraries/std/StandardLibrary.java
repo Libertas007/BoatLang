@@ -126,17 +126,17 @@ public class StandardLibrary extends Library {
 
 
             if (!(arguments.get(0).value() instanceof VariableReference typeName)) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The first argument must be a type name.", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The first argument must be an identifier.", arguments.get(0).region()), true);
                 return new None();
             }
 
             if (!context.existsType(typeName.name)) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The first argument must be a type name.", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The first argument must be a type name.", arguments.get(0).region()), true);
                 return new None();
             }
 
             if (!(arguments.get(1).value() instanceof VariableReference)) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The second argument must be an identifier.", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The second argument must be an identifier.", arguments.get(0).region()), true);
                 return new None();
             }
 

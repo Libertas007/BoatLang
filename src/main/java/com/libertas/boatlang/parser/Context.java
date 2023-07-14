@@ -50,6 +50,10 @@ public class Context {
         return types;
     }
 
+    public void loadTypes(HashMap<String, Variable> types) {
+        this.types.putAll(types);
+    }
+
     public void loadContext(Context context) {
         variables.putAll(context.exportVariables());
         functions.putAll(context.exportFunctions());

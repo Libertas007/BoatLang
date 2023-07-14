@@ -4,6 +4,7 @@ import com.libertas.boatlang.errors.BoatError;
 import com.libertas.boatlang.errors.ErrorLog;
 import com.libertas.boatlang.errors.ErrorType;
 import com.libertas.boatlang.generics.Region;
+import com.libertas.boatlang.libraries.file.FileLibrary;
 import com.libertas.boatlang.libraries.math.MathLibrary;
 import com.libertas.boatlang.libraries.std.StandardLibrary;
 import com.libertas.boatlang.parser.Context;
@@ -27,6 +28,13 @@ public class ImportNode extends DefinitionNode {
 
         if (toImport.get(context).value.equals("MATH")) {
             context.setVariable("MATH", new MathLibrary());
+            return new NodeResult(new Switch(true));
+        }
+
+        if (toImport.get(context).value.equals("FILES")) {
+            context.setVariable("FILES", new FileLibrary());
+            context.loadTypes(new FileLibrary().asContext().getTypes());
+            return new NodeResult(new Switch(true));
         }
 
         String path = toImport.get(context).value.toString();
@@ -34,6 +42,7 @@ public class ImportNode extends DefinitionNode {
 
         if (!file.exists()) {
             ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "FileNotFound", "The file '" + path + "' cannot be found", region), true);
+            return new NodeResult(new Switch(false));
         }
 
         Context childContext = new Context();
