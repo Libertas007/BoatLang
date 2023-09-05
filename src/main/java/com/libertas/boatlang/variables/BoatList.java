@@ -66,7 +66,7 @@ public class BoatList extends Variable {
 
         setMethod("REMOVE", new Method("REMOVE", ((context, self, arguments, region) -> {
             if (arguments.size() != 1) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 parameter, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
                 return new None();
             }
 
@@ -83,6 +83,67 @@ public class BoatList extends Variable {
             }
 
             return ((BoatList) self).value.remove(toRemove);
+        })));
+
+        setMethod("GET", new Method("GET", ((context, self, arguments, region) -> {
+            if (arguments.size() != 1) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                return new None();
+            }
+
+            if (!(arguments.get(0).value().get(context) instanceof Barrel)) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The first argument must be a BARREL.", arguments.get(0).region()), true);
+                return new None();
+            }
+
+            int index = ((Fraction) arguments.get(0).value().get(context).value).intValue();
+
+            if (((BoatList) self).value.size() <= index) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "NotInRange", "Element with index " + index + " does not exist in a list with the size of " + ((BoatList) self).value.size() + ".", arguments.get(0).region()), true);
+                return new None();
+            }
+
+            return ((BoatList) self).value.get(index);
+        })));
+
+        setMethod("REPLACE", new Method("REPLACE", ((context, self, arguments, region) -> {
+            if (arguments.size() != 2) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 2 arguments, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                return new None();
+            }
+
+            if (!(arguments.get(0).value().get(context) instanceof Barrel)) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The first argument must be a BARREL.", arguments.get(0).region()), true);
+                return new None();
+            }
+
+            int index = ((Fraction) arguments.get(0).value().get(context).value).intValue();
+
+            if (((BoatList) self).value.size() <= index) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "NotInRange", "Element with index " + index + " does not exist in a list with the size of " + ((BoatList) self).value.size() + ".", arguments.get(0).region()), true);
+                return new None();
+            }
+
+            ((BoatList) self).value.set(index, arguments.get(1).value().get(context));
+            return arguments.get(1).value().get(context);
+        })));
+
+        setMethod("CONTAINS", new Method("CONTAINS", ((context, self, arguments, region) -> {
+            if (arguments.size() != 1) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                return new None();
+            }
+
+            Variable shouldContain = arguments.get(0).value().get(context);
+
+            for (Variable predicate : ((BoatList) self).value) {
+                if (!predicate.value.equals(shouldContain.value)) continue;
+                if (!predicate.displayName.equals(shouldContain.displayName)) continue;
+
+                return new Switch(true);
+            }
+
+            return new Switch(false);
         })));
 
         addImplementation(new Implementation("REQUEST", new ArrayList<>(), new NativeFunction("", (context, arguments, region) -> new BoatList(new ArrayList<>()))));
