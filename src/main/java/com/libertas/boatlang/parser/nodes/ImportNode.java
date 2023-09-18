@@ -28,6 +28,7 @@ public class ImportNode extends DefinitionNode {
 
         if (toImport.get(context).value.equals("MATH")) {
             context.setVariable("MATH", new MathLibrary());
+            context.loadTypes(new MathLibrary().asContext().getTypes());
             return new NodeResult(new Switch(true));
         }
 

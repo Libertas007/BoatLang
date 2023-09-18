@@ -9,8 +9,12 @@ import com.libertas.boatlang.variables.Barrel;
 import com.libertas.boatlang.variables.None;
 import org.apache.commons.math3.fraction.Fraction;
 
+import java.util.HashSet;
+
 public class MathLibrary extends Library {
     public MathLibrary() {
+        types.put("MATHSET", new MathSet(new HashSet<>()));
+
         setProperty("PI", new Barrel(new Fraction(Math.PI)));
         setProperty("E", new Barrel(new Fraction(Math.E)));
         setProperty("TAU", new Barrel(new Fraction(Math.TAU)));
