@@ -14,6 +14,7 @@ import com.libertas.boatlang.parser.Context;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class Variable {
     public String displayName;
@@ -194,6 +195,35 @@ public abstract class Variable {
 
         ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "MethodNotImplemented", "The method SUBTRACT is not implemented for " + firstDisplayName + " " + secondDisplayName + ".", region), true);
         return new None();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Variable variable = (Variable) o;
+
+        if (!Objects.equals(displayName, variable.displayName))
+            return false;
+        return Objects.equals(value, variable.value);
+    }
+
+    public boolean strongEquals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Variable variable = (Variable) o;
+
+        if (originatesFromInput != variable.originatesFromInput) return false;
+        if (!Objects.equals(displayName, variable.displayName))
+            return false;
+        return Objects.equals(value, variable.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
     }
 
     @Override

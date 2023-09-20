@@ -107,6 +107,48 @@ public class MathSet extends Variable {
 
             return new BoatList(((MathSet) self).value.stream().toList());
         })));
+
+        setMethod("UNION", new Method("UNION", ((context, self, arguments, region) -> {
+            if (arguments.size() != 1) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                return new None();
+            }
+
+            if (!(arguments.get(0).value().get(context) instanceof MathSet)) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The first argument must be a MATHSET.", arguments.get(0).region()), true);
+                return new None();
+            }
+
+            HashSet<Variable> union = new HashSet<>();
+
+            MathSet second = (MathSet) arguments.get(0).value().get(context);
+
+            union.addAll(second.value);
+            union.addAll(((MathSet) self).value);
+
+            return new MathSet(union);
+        })));
+
+        setMethod("INTERSECTION", new Method("INTERSECTION", ((context, self, arguments, region) -> {
+            if (arguments.size() != 1) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                return new None();
+            }
+
+            if (!(arguments.get(0).value().get(context) instanceof MathSet)) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The first argument must be a MATHSET.", arguments.get(0).region()), true);
+                return new None();
+            }
+
+            HashSet<Variable> intersection = new HashSet<>();
+
+            MathSet second = (MathSet) arguments.get(0).value().get(context);
+
+            intersection.addAll(second.value);
+            intersection.retainAll(((MathSet) self).value);
+
+            return new MathSet(intersection);
+        })));
     }
 
     private void implement() {
@@ -127,6 +169,28 @@ public class MathSet extends Variable {
             newSet.add(arguments.get(0).value().get(context));
 
             return new MathSet(newSet);
+        })));
+
+        addImplementation(new Implementation("SUBTRACT", List.of("MATHSET", "MATHSET"), new NativeFunction("", (context, arguments, region) -> {
+            if (arguments.get(1).value() instanceof VariableReference) {
+
+                HashSet<Variable> what = ((MathSet) arguments.get(0).value().get(context)).value;
+                HashSet<Variable> from = ((MathSet) arguments.get(1).value().get(context)).value;
+
+                for (Variable var : what) {
+                    from.removeIf(x -> x.value.equals(var.value) && x.displayName.equals(var.displayName));
+                }
+
+                context.setVariable(((VariableReference) arguments.get(1).value()).name, new MathSet(from));
+                return context.getVariable(((VariableReference) arguments.get(1).value()).name, arguments.get(1).region());
+            }
+
+            HashSet<Variable> what = ((MathSet) arguments.get(0).value()).value;
+            HashSet<Variable> from = ((MathSet) arguments.get(1).value()).value;
+
+            from.removeAll(what);
+
+            return new MathSet(from);
         })));
     }
 
