@@ -77,7 +77,7 @@ public class MathSet extends Variable {
 
             Variable toRemove = arguments.get(0).value().get(context);
 
-            ((MathSet) self).value.remove(toRemove);
+            ((MathSet) self).value.removeIf(var -> var.value.equals(toRemove.value) && var.displayName.equals(toRemove.displayName));
             return toRemove;
         })));
 
