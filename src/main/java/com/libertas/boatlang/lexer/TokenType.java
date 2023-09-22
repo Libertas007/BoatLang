@@ -17,6 +17,8 @@ public enum TokenType {
     METHOD_ACCESS,
     LIST_START,
     LIST_END,
+    SET_START,
+    SET_END,
     SEPARATOR,
 }
 

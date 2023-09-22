@@ -105,17 +105,17 @@ public class StandardLibrary extends Library {
             }
 
             if (!arguments.get(1).value().get(context).value.equals("TO")) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The second argument must be 'TO'.", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The second argument must be 'TO'.", arguments.get(1).region()), true);
                 return new None();
             }
 
-            if (!(arguments.get(0).value() instanceof VariableReference)) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The first argument must be an identifier.", arguments.get(arguments.size() - 1).region()), true);
+            if (!(arguments.get(2).value() instanceof VariableReference)) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The last argument must be an identifier.", arguments.get(2).region()), true);
                 return new None();
             }
 
-            context.setVariable(((VariableReference) arguments.get(0).value()).name, arguments.get(2).value().get(context));
-            return context.getVariable(((VariableReference) arguments.get(0).value()).name, arguments.get(0).region());
+            context.setVariable(((VariableReference) arguments.get(2).value()).name, arguments.get(0).value().get(context));
+            return context.getVariable(((VariableReference) arguments.get(2).value()).name, arguments.get(0).region());
         }));
 
         setMethod("REQUEST", new Method("REQUEST", (context, self, arguments, region) -> {

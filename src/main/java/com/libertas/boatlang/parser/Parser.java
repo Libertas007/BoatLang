@@ -14,6 +14,7 @@ import com.libertas.boatlang.variables.Package;
 import com.libertas.boatlang.variables.VariableReference;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class Parser {
@@ -119,12 +120,31 @@ public class Parser {
             return new ArgumentNode(new ListLiteralNode(argumentNodes, argumentNodes.get(0).region.combine(argumentNodes.get(argumentNodes.size() - 1).region)));
         }
 
+        if (currentToken.getType() == TokenType.SET_START) {
+            Region start = currentToken.getRegion();
+            advance();
+            HashSet<ArgumentNode> argumentNodes = new HashSet<>();
+            argumentNodes.add(makeArgument(true));
+
+            advance();
+            while (currentToken.getType() != TokenType.SET_END) {
+                if (currentToken.getType() != TokenType.SEPARATOR) {
+                    ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidSyntax", "Expected ','.", currentToken.getRegion()), true);
+                }
+                advance();
+                argumentNodes.add(makeArgument(true));
+                advance();
+            }
+
+            return new ArgumentNode(new SetLiteralNode(argumentNodes, start.combine(currentToken.getRegion())));
+        }
+
         ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidSyntax", "Expected BARREL, PACKAGE, an identifier, '(' or '['.", currentToken.getRegion()), true);
         return new ArgumentNode(new None(), new Region());
     }
 
     private boolean matchesArgumentStart(Token token) {
-        return token.getType() == TokenType.BARREL || token.getType() == TokenType.PACKAGE || token.getType() == TokenType.IDENTIFIER || token.getType() == TokenType.RETURN_GROUP_START || token.getType() == TokenType.ARGUMENT_KEYWORD || token.getType() == TokenType.LIST_START;
+        return token.getType() == TokenType.BARREL || token.getType() == TokenType.PACKAGE || token.getType() == TokenType.IDENTIFIER || token.getType() == TokenType.RETURN_GROUP_START || token.getType() == TokenType.ARGUMENT_KEYWORD || token.getType() == TokenType.LIST_START || token.getType() == TokenType.SET_START;
     }
 
     private boolean matchesCommandStart(Token token, Token next) {

@@ -93,6 +93,12 @@ public class Lexer {
             } else if (currentChar == ']') {
                 tokens.add(new Token(TokenType.LIST_END, new Package("]"), new Region(line, positionInLine)));
                 advance();
+            } else if (currentChar == '{') {
+                tokens.add(new Token(TokenType.SET_START, new Package("{"), new Region(line, positionInLine)));
+                advance();
+            } else if (currentChar == '}') {
+                tokens.add(new Token(TokenType.SET_END, new Package("}"), new Region(line, positionInLine)));
+                advance();
             } else if (currentChar == ',') {
                 tokens.add(new Token(TokenType.SEPARATOR, new Package(","), new Region(line, positionInLine)));
                 advance();
