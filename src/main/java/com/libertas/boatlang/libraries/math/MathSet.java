@@ -149,6 +149,24 @@ public class MathSet extends Variable {
 
             return new MathSet(intersection);
         })));
+
+        setMethod("HASSUBSET", new Method("HASSUBSET", (((context, self, arguments, region) -> {
+            if (arguments.size() != 1) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                return new None();
+            }
+
+            if (!(arguments.get(0).value().get(context) instanceof MathSet)) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The first argument must be a MATHSET.", arguments.get(0).region()), true);
+                return new None();
+            }
+
+            HashSet<Variable> subset = new HashSet<>(((MathSet) arguments.get(0).value().get(context)).value);
+
+            subset.removeAll(((MathSet) self).value);
+
+            return new Switch(subset.isEmpty());
+        }))));
     }
 
     private void implement() {
