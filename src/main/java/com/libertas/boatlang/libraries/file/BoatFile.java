@@ -66,11 +66,6 @@ public class BoatFile extends Variable {
                 return new None();
             }
 
-            if (!me.value.exists()) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "FileNotFound", "The file '" + me.value.getPath() + "' cannot be found.", region), true);
-                return new None();
-            }
-
             if (!me.value.canWrite()) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "MissingPermissions", "The file '" + me.value.getPath() + "' cannot be written to.", region), true);
                 return new None();

@@ -14,6 +14,7 @@ import com.libertas.boatlang.variables.*;
 import org.apache.commons.math3.fraction.Fraction;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Scanner;
 
 
@@ -109,13 +110,19 @@ public class StandardLibrary extends Library {
                 return new None();
             }
 
-            if (!(arguments.get(2).value() instanceof VariableReference)) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The last argument must be an identifier.", arguments.get(2).region()), true);
+            if (!(arguments.get(0).value() instanceof VariableReference)) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "The first argument must be an identifier.", arguments.get(0).region()), true);
                 return new None();
             }
 
-            context.setVariable(((VariableReference) arguments.get(2).value()).name, arguments.get(0).value().get(context));
-            return context.getVariable(((VariableReference) arguments.get(2).value()).name, arguments.get(0).region());
+            if (!Objects.equals(arguments.get(0).value().get(context).displayName, arguments.get(2).value().get(context).displayName)) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "MismatchedTypes", "Expected " + arguments.get(0).value().get(context).displayName + ", got " + arguments.get(2).value().get(context).displayName + ".", arguments.get(2).region()), true);
+                return new None();
+            }
+
+
+            context.setVariable(((VariableReference) arguments.get(0).value()).name, arguments.get(2).value().get(context));
+            return context.getVariable(((VariableReference) arguments.get(0).value()).name, arguments.get(2).region());
         }));
 
         setMethod("REQUEST", new Method("REQUEST", (context, self, arguments, region) -> {

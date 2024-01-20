@@ -100,8 +100,7 @@ public class Barrel extends Variable {
                 return context.getVariable(((VariableReference) arguments.get(0).value()).name, arguments.get(0).region());
             }
 
-            context.setVariable(((VariableReference) arguments.get(0).value()).name, new Package((String) arguments.get(0).value().get(context).value));
-            return context.getVariable(((VariableReference) arguments.get(0).value()).name, arguments.get(0).region());
+            return new Package(arguments.get(0).value().get(context).value.toString());
         })));
     }
 

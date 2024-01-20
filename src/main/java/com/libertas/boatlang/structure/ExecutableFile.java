@@ -31,6 +31,7 @@ public class ExecutableFile {
         this.path = path;
         this.context = new Context(context);
         contents = read();
+        ErrorLog.getInstance().registerInput(contents);
         process();
     }
 
@@ -40,7 +41,7 @@ public class ExecutableFile {
 
             return Files.readString(path1);
         } catch (IOException e) {
-            ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "IOException", e.getMessage(), new Region()), true);
+            ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "IOException", e.getMessage() + "\n" + e.getCause(), new Region()), true);
             return "";
         }
     }
@@ -55,10 +56,12 @@ public class ExecutableFile {
             joiner.add(token.toString());
         }
 
-        // System.out.println(joiner);
+        System.out.println(joiner);
 
         Parser parser = new Parser(tokens);
         program = parser.parse();
+
+        System.out.println(program);
     }
 
     public NodeResult run() {

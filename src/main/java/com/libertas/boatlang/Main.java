@@ -165,7 +165,7 @@ public class Main {
                 joiner.add(token.toString());
             }
 
-            System.out.println(joiner);
+            //System.out.println(joiner);
 
             Context globalContext = new Context();
 
@@ -178,9 +178,9 @@ public class Main {
 
             Parser parser = new Parser(tokens);
             ProgramNode result = parser.parse();
-            System.out.println(result);
+            //System.out.println(result);
             System.out.println(result.get(globalContext).result.represent());
-            System.out.println(globalContext.getTypes());
+            //System.out.println(globalContext.getTypes());
 
             log.process();
         }

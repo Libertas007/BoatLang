@@ -9,6 +9,7 @@ import com.libertas.boatlang.variables.Barrel;
 import com.libertas.boatlang.variables.None;
 import com.libertas.boatlang.variables.Switch;
 import com.libertas.boatlang.variables.Variable;
+import org.apache.commons.math3.fraction.Fraction;
 
 public class ConditionNode extends Node {
     public ArgumentNode first;
@@ -39,8 +40,8 @@ public class ConditionNode extends Node {
             ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "MismatchedTypes", "Cannot compare '" + firstValue.displayName + "' and '" + secondValue.displayName + "' using " + operator + " operator.", region), true);
         }
 
-        Double firstDouble = (Double) firstValue.get(context).value;
-        Double secondDouble = (Double) secondValue.get(context).value;
+        Double firstDouble = ((Fraction) firstValue.get(context).value).doubleValue();
+        Double secondDouble = ((Fraction) secondValue.get(context).value).doubleValue();
 
         if (operator.equals("<")) {
             return new NodeResult(new Switch(firstDouble < secondDouble));

@@ -104,6 +104,21 @@ public class Package extends Variable {
                 return new None();
             }
 
+            if (arguments.get(0).value() instanceof VariableReference reference) {
+                try {
+                    String value = reference.get(context).value.toString();
+
+                    FractionFormat format = new FractionFormat();
+
+                    Fraction parsed = format.parse(value);
+
+                    context.setVariable(reference.name, new Barrel(parsed));
+                    return context.getVariable(reference.name, arguments.get(0).region());
+                } catch (NumberFormatException e) {
+                    ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidBarrelFormat", "The PACKAGE '" + value + "' cannot be parsed into a BARREL.", arguments.get(0).region()), true);
+                    return new None();
+                }
+            }
 
             try {
                 String value = arguments.get(0).value().get(context).value.toString();
@@ -111,9 +126,8 @@ public class Package extends Variable {
                 FractionFormat format = new FractionFormat();
 
                 Fraction parsed = format.parse(value);
-
-                context.setVariable(((VariableReference) arguments.get(0).value()).name, new Barrel(parsed));
-                return context.getVariable(((VariableReference) arguments.get(0).value()).name, arguments.get(0).region());
+                
+                return new Barrel(parsed);
             } catch (NumberFormatException e) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidBarrelFormat", "The PACKAGE '" + value + "' cannot be parsed into a BARREL.", arguments.get(0).region()), true);
                 return new None();
