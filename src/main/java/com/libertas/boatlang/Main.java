@@ -27,9 +27,11 @@ public class Main {
     public static String input = "";
     public static final String TEMPLATE = """
             SAIL ON YACHT
-                        
+            
             BROADCAST "Hello world!"
             """;
+
+    public static final String VERSION = "v1.0.0";
 
     public static void main(String[] args) {
         if (args.length == 0) {
@@ -49,6 +51,12 @@ public class Main {
             ExecutableFile file = new ExecutableFile(args[1], globalContext);
 
             file.run();
+            return;
+        }
+
+        if (args[0].equals("update")) {
+            BoatUpdater.update();
+            return;
         }
 
         if (args[0].equals("new") && args.length == 2) {
@@ -57,11 +65,24 @@ public class Main {
             } catch (Exception e) {
                 System.out.println("❌ We were interrupted! Don't do that to us!");
             }
+            return;
         }
 
         if (args[0].equals("analyze") && args.length == 2) {
             analyze(args[1]);
+            return;
         }
+
+        printHelp();
+    }
+
+    public static void printHelp() {
+        System.out.println("⛵ Boat " + BoatUpdater.getCurrentVersion());
+        System.out.println("\nHow to use?\n");
+        System.out.println("\uD83D\uDEF6 run a file: boat run <filename>");
+        System.out.println("\uD83D\uDD0E analyze file: boat analyze <filename>");
+        System.out.println("\uD83C\uDD95 create new file: boat new <filename>");
+        System.out.println("\uD83E\uDD75 update Boat: boat update");
     }
 
     public static void analyze(String filename) {
@@ -137,7 +158,7 @@ public class Main {
                 \\     BOAT     /
                  \\____________/
                 ~~~~~~~~~~~~~~~~~
-                    """);
+                """);
         System.out.println("Welcome to Boat terminal!\n\n");
         Scanner scanner = new Scanner(System.in);
 
@@ -159,11 +180,11 @@ public class Main {
             Lexer lexer = new Lexer(command);
             ArrayList<Token> tokens = lexer.tokenize();
 
-            StringJoiner joiner = new StringJoiner("\n");
-
-            for (Token token : tokens) {
-                joiner.add(token.toString());
-            }
+//            StringJoiner joiner = new StringJoiner("\n");
+//
+//            for (Token token : tokens) {
+//                joiner.add(token.toString());
+//            }
 
             //System.out.println(joiner);
 
@@ -179,6 +200,12 @@ public class Main {
             Parser parser = new Parser(tokens);
             ProgramNode result = parser.parse();
             //System.out.println(result);
+
+            if (ErrorLog.getInstance().hasCriticalErrors) {
+                ErrorLog.getInstance().process();
+                System.exit(1);
+            }
+
             System.out.println(result.get(globalContext).result.represent());
             //System.out.println(globalContext.getTypes());
 
