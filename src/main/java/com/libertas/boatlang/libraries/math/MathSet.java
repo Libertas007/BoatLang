@@ -51,7 +51,7 @@ public class MathSet extends Variable {
 
         setMethod("JOIN", new Method("JOIN", ((context, self, arguments, region) -> {
             if (arguments.size() != 1) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 parameter, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 parameter, got " + arguments.size() + ".", region), true);
                 return new None();
             }
 
@@ -71,7 +71,7 @@ public class MathSet extends Variable {
 
         setMethod("REMOVE", new Method("REMOVE", ((context, self, arguments, region) -> {
             if (arguments.size() != 1) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", region), true);
                 return new None();
             }
 
@@ -83,7 +83,7 @@ public class MathSet extends Variable {
 
         setMethod("CONTAINS", new Method("CONTAINS", ((context, self, arguments, region) -> {
             if (arguments.size() != 1) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", region), true);
                 return new None();
             }
 
@@ -101,7 +101,7 @@ public class MathSet extends Variable {
 
         setMethod("TOLIST", new Method("TOLIST", ((context, self, arguments, region) -> {
             if (arguments.size() != 0) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected no arguments, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected no arguments, got " + arguments.size() + ".", region), true);
                 return new None();
             }
 
@@ -110,7 +110,7 @@ public class MathSet extends Variable {
 
         setMethod("UNION", new Method("UNION", ((context, self, arguments, region) -> {
             if (arguments.size() != 1) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", region), true);
                 return new None();
             }
 
@@ -131,7 +131,7 @@ public class MathSet extends Variable {
 
         setMethod("INTERSECTION", new Method("INTERSECTION", ((context, self, arguments, region) -> {
             if (arguments.size() != 1) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", region), true);
                 return new None();
             }
 
@@ -152,7 +152,7 @@ public class MathSet extends Variable {
 
         setMethod("HASSUBSET", new Method("HASSUBSET", (((context, self, arguments, region) -> {
             if (arguments.size() != 1) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", region), true);
                 return new None();
             }
 

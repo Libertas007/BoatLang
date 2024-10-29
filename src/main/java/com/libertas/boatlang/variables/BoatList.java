@@ -46,7 +46,7 @@ public class BoatList extends Variable {
 
         setMethod("JOIN", new Method("JOIN", ((context, self, arguments, region) -> {
             if (arguments.size() != 1) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 parameter, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 parameter, got " + arguments.size() + ".", region), true);
                 return new None();
             }
 
@@ -66,7 +66,7 @@ public class BoatList extends Variable {
 
         setMethod("REMOVE", new Method("REMOVE", ((context, self, arguments, region) -> {
             if (arguments.size() != 1) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", region), true);
                 return new None();
             }
 
@@ -87,7 +87,7 @@ public class BoatList extends Variable {
 
         setMethod("GET", new Method("GET", ((context, self, arguments, region) -> {
             if (arguments.size() != 1) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", region), true);
                 return new None();
             }
 
@@ -108,7 +108,7 @@ public class BoatList extends Variable {
 
         setMethod("REPLACE", new Method("REPLACE", ((context, self, arguments, region) -> {
             if (arguments.size() != 2) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 2 arguments, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 2 arguments, got " + arguments.size() + ".", region), true);
                 return new None();
             }
 
@@ -130,7 +130,7 @@ public class BoatList extends Variable {
 
         setMethod("CONTAINS", new Method("CONTAINS", ((context, self, arguments, region) -> {
             if (arguments.size() != 1) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 argument, got " + arguments.size() + ".", region), true);
                 return new None();
             }
 

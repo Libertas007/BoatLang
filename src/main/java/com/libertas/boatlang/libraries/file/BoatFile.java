@@ -5,6 +5,8 @@ import com.libertas.boatlang.errors.ErrorLog;
 import com.libertas.boatlang.errors.ErrorType;
 import com.libertas.boatlang.functions.Method;
 import com.libertas.boatlang.generics.Region;
+import com.libertas.boatlang.generics.RunConfiguration;
+import com.libertas.boatlang.generics.RunMode;
 import com.libertas.boatlang.parser.Context;
 import com.libertas.boatlang.variables.None;
 import com.libertas.boatlang.variables.Package;
@@ -47,6 +49,8 @@ public class BoatFile extends Variable {
                 return new None();
             }
 
+            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE) return new None();
+
             try {
                 Path path = Paths.get(me.value.getPath());
                 String contents = Files.readString(path);
@@ -62,7 +66,7 @@ public class BoatFile extends Variable {
             BoatFile me = (BoatFile) self;
 
             if (arguments.size() != 1) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 parameter, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 parameter, got " + arguments.size() + ".", region), true);
                 return new None();
             }
 
@@ -70,6 +74,8 @@ public class BoatFile extends Variable {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "MissingPermissions", "The file '" + me.value.getPath() + "' cannot be written to.", region), true);
                 return new None();
             }
+
+            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE) return new None();
 
             try {
                 FileWriter writer = new FileWriter(me.value);
@@ -100,6 +106,8 @@ public class BoatFile extends Variable {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "MissingPermissions", "The file '" + me.value.getPath() + "' cannot be written to.", region), true);
                 return new None();
             }
+
+            if (RunConfiguration.getInstance().mode == RunMode.ANALYZE) return new None();
 
             try {
                 FileWriter writer = new FileWriter(me.value);

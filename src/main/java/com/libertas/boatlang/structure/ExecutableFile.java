@@ -18,7 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.StringJoiner;
 
 public class ExecutableFile {
     public String path;
@@ -50,18 +49,23 @@ public class ExecutableFile {
         Lexer lexer = new Lexer(contents);
         ArrayList<Token> tokens = lexer.tokenize();
 
-        StringJoiner joiner = new StringJoiner("\n");
-
-        for (Token token : tokens) {
-            joiner.add(token.toString());
-        }
-
-        System.out.println(joiner);
+//        StringJoiner joiner = new StringJoiner("\n");
+//
+//        for (Token token : tokens) {
+//            joiner.add(token.toString());
+//        }
+//
+//        System.out.println(joiner);
 
         Parser parser = new Parser(tokens);
         program = parser.parse();
 
-        System.out.println(program);
+        if (ErrorLog.getInstance().hasCriticalErrors) {
+            ErrorLog.getInstance().process();
+            System.exit(1);
+        }
+
+        //System.out.println(program);
     }
 
     public NodeResult run() {

@@ -17,7 +17,7 @@ public class Lexer {
     private final String input;
     private int position;
     private int positionInLine = 0;
-    private int line = 0;
+    private int line = 1;
     private final String[] keywords = {
             "IF",
             "ELSE",
@@ -104,7 +104,7 @@ public class Lexer {
                 advance();
             } else if (currentChar == '/') {
                 skipComment();
-                advance();
+                advanceLine();
             } else if (canBeInOperator(currentChar)) {
                 tokens.add(readOperator());
                 advance();

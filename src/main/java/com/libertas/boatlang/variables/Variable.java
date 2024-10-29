@@ -45,10 +45,11 @@ public abstract class Variable {
     }
 
     public Variable runMethod(String name, List<BoatFunctionArgumentValue> arguments, Region region, Context context) {
-        if (name.equals("")) return this;
+        if (name.isEmpty()) return this;
 
         if (!methods.containsKey(name)) {
             ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "UnknownMethod", "Method '" + name + "' does not exist on type " + displayName + ".", region), true);
+            return new None();
         }
 
         return methods.get(name).run(context, this, arguments, region).result;

@@ -45,7 +45,7 @@ public class Package extends Variable {
 
         setMethod("SPLIT", new Method("SPLIT", ((context, self, arguments, region) -> {
             if (arguments.size() != 1) {
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 parameter, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 parameter, got " + arguments.size() + ".", region), true);
                 return new None();
             }
 
@@ -126,7 +126,7 @@ public class Package extends Variable {
                 FractionFormat format = new FractionFormat();
 
                 Fraction parsed = format.parse(value);
-                
+
                 return new Barrel(parsed);
             } catch (NumberFormatException e) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidBarrelFormat", "The PACKAGE '" + value + "' cannot be parsed into a BARREL.", arguments.get(0).region()), true);

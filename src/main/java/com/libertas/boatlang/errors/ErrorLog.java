@@ -31,7 +31,7 @@ public class ErrorLog {
 
     public void registerError(BoatError error, boolean process) {
         registerError(error);
-        if (process && RunConfiguration.getInstance().mode != RunMode.ANALYZE) {
+        if (process) {
             process();
         }
     }
@@ -43,6 +43,12 @@ public class ErrorLog {
     public void process() {
         int numOfCritical = 0;
         int numOfWarnings = 0;
+
+        if (RunConfiguration.getInstance().mode == RunMode.ANALYZE) {
+            System.out.println(getAnalysisReport());
+            System.exit(0);
+            return;
+        }
 
         for (BoatError error : errors) {
             if (error.type == ErrorType.CRITICAL) {
@@ -86,7 +92,7 @@ public class ErrorLog {
         if (allLines.length < region.lineEnd || region.isEmpty) return;
 
         if (region.lineStart == region.lineEnd) {
-            String line = allLines[region.lineStart];
+            String line = allLines[region.lineStart - 1];
 
             StringBuilder underline = new StringBuilder();
 
@@ -102,7 +108,7 @@ public class ErrorLog {
                     "| " + line + "\n" +
                     "| " + (type == ErrorType.CRITICAL ? ConsoleColors.RED : ConsoleColors.YELLOW_BRIGHT) + underline + ConsoleColors.RESET + "\n" +
                     "| \n" +
-                    "| on line " + (region.lineStart + 1) + ", characters " + region.charStart + "-" + region.charEnd);
+                    "| on line " + (region.lineStart) + ", characters " + region.charStart + "-" + region.charEnd);
         }
     }
 
