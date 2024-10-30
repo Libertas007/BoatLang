@@ -13,7 +13,6 @@ $apiUrl = "https://api.github.com/repos/Libertas007/BoatLang/releases/latest"
 
 # Fetch the latest release information
 $response = Invoke-RestMethod -Uri $apiUrl -Headers @{ "User-Agent" = "PowerShell" }
-
 $version = $response.tag_name
 
 Write-Host -ForegroundColor Gray "📨 Downloading version $version..."
@@ -39,7 +38,6 @@ $dateInMillis = [int64]((Get-Date).ToUniversalTime() - [datetime]'1970-01-01').T
 # Write the current date in milliseconds to the file
 Set-Content -Path $filePath -Value "$version;;$dateInMillis"
 
-
 # Get the current PATH environment variable
 $currentPath = [System.Environment]::GetEnvironmentVariable("PATH", [System.EnvironmentVariableTarget]::User)
 
@@ -47,8 +45,7 @@ $currentPath = [System.Environment]::GetEnvironmentVariable("PATH", [System.Envi
 if (-not ($currentPath -split ";") -contains $boatPath)
 {
     # If not, add it
-    $boatPath += ";"
-    $updatedPath = $currentPath + $boatPath
+    $updatedPath = $currentPath + ";" + $boatPath
     [System.Environment]::SetEnvironmentVariable("PATH", $updatedPath, [System.EnvironmentVariableTarget]::User)
     Write-Host -ForegroundColor Gray "👣 Boat folder added to PATH successfully."
 }
