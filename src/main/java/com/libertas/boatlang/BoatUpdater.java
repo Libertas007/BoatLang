@@ -5,6 +5,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 public class BoatUpdater {
@@ -16,12 +19,14 @@ public class BoatUpdater {
     public static void update() {
         try {
             String latestVersion = getLatestVersion();
+            Date latestVersionUpdate = getCurrentVersionUpdate();
             String currentVersion = getCurrentVersion();
+            Date currentVersionUpdate = getCurrentVersionUpdate();
 
-            if (!latestVersion.equals(currentVersion)) {
+            if (latestVersionUpdate.after(currentVersionUpdate)) {
                 System.out.println("\uD83C\uDD95 New version available: " + currentVersion + " -> " + latestVersion);
                 downloadAndRunScript();
-                saveCurrentVersion(latestVersion);
+                saveCurrentVersion(latestVersion, latestVersionUpdate);
             } else {
                 System.out.println("\uD83D\uDC4D Boat is up to date.");
             }
@@ -30,7 +35,7 @@ public class BoatUpdater {
         }
     }
 
-    private static String getLatestVersion() throws IOException {
+    public static String getLatestVersion() throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(GITHUB_API_URL).openConnection();
         connection.setRequestProperty("User-Agent", "Java");
 
@@ -40,11 +45,31 @@ public class BoatUpdater {
         }
     }
 
+    public static Date getLatestVersionUpdate() throws IOException, ParseException {
+        HttpURLConnection connection = (HttpURLConnection) new URL(GITHUB_API_URL).openConnection();
+        connection.setRequestProperty("User-Agent", "Java");
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            String response = reader.lines().collect(Collectors.joining());
+            String iso = response.split("\"tag_name\":\"")[1].split("\"")[0];
+            return DateFormat.getDateInstance().parse(iso);
+
+        }
+    }
+
     public static String getCurrentVersion() {
         try {
-            return new String(Files.readAllBytes(Paths.get(CURRENT_VERSION_FILE))).trim();
+            return new String(Files.readAllBytes(Paths.get(CURRENT_VERSION_FILE))).split(";;")[0];
         } catch (IOException e) {
             return "";
+        }
+    }
+
+    public static Date getCurrentVersionUpdate() {
+        try {
+            return new Date(Long.parseLong(new String(Files.readAllBytes(Paths.get(CURRENT_VERSION_FILE))).split(";;")[1]));
+        } catch (IOException e) {
+            return new Date();
         }
     }
 
@@ -81,8 +106,8 @@ public class BoatUpdater {
         }
     }
 
-    private static void saveCurrentVersion(String version) throws IOException {
-        Files.write(Paths.get(CURRENT_VERSION_FILE), version.getBytes());
+    private static void saveCurrentVersion(String version, Date update) throws IOException {
+        Files.write(Paths.get(CURRENT_VERSION_FILE), (version + ";;" + update.getTime()).getBytes());
     }
 
     private static boolean isWindows() {

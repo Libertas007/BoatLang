@@ -22,6 +22,21 @@ echo "$response" | jq -r '.assets[] | .browser_download_url' | while read -r url
     curl -L -o "$boatPath/$(basename $url)" "$url"
 done
 
+
+filePath="$boatPath/version.txt"
+
+# Create the file if it doesn't exist
+if [ ! -f "$filePath" ]; then
+    touch "$filePath"
+fi
+
+# Get the current date in milliseconds since the epoch
+dateInMillis=$(($(date +%s%N)/1000000))
+
+# Write the current date in milliseconds to the file
+echo "$version;;$dateInMillis" > $filePath
+
+
 # Get the current PATH environment variable
 currentPath=$(echo $PATH | tr ':' '\n')
 

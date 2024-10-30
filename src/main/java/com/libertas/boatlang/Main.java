@@ -30,9 +30,7 @@ public class Main {
             
             BROADCAST "Hello world!"
             """;
-
-    public static final String VERSION = "v1.0.0";
-
+    
     public static void main(String[] args) {
         if (args.length == 0) {
             terminal();

@@ -24,6 +24,22 @@ foreach ($asset in $response.assets)
     Invoke-WebRequest -Uri $asset.browser_download_url -OutFile "$boatPath\$( $asset.name )"
 }
 
+# Define the file path
+$filePath = "$boatPath\version.txt"
+
+# Create the file if it doesn't exist
+if (-not (Test-Path -Path $filePath))
+{
+    New-Item -ItemType File -Path $filePath
+}
+
+# Get the current date in milliseconds since the epoch
+$dateInMillis = [int64]((Get-Date).ToUniversalTime() - [datetime]'1970-01-01').TotalMilliseconds
+
+# Write the current date in milliseconds to the file
+Set-Content -Path $filePath -Value "$version;;$dateInMillis"
+
+
 # Get the current PATH environment variable
 $currentPath = [System.Environment]::GetEnvironmentVariable("PATH", [System.EnvironmentVariableTarget]::User)
 
