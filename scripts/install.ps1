@@ -4,7 +4,7 @@ Write-Host "⛵ Installing Boat..."
 $boatPath = "$env:USERPROFILE\.boat"
 if (-not (Test-Path -Path $boatPath)) {
     New-Item -ItemType Directory -Path $boatPath
-    Write-Host -ForegroundColor Gray "📂 Created a ~/.boat/ folder."
+    Write-Host -ForegroundColor Gray " Created a ~/.boat/ folder."
 }
 
 # Define the GitHub repository details
@@ -13,8 +13,7 @@ $apiUrl = "https://api.github.com/repos/Libertas007/BoatLang/releases/latest"
 # Fetch the latest release information
 $response = Invoke-RestMethod -Uri $apiUrl -Headers @{ "User-Agent" = "PowerShell" }
 $version = $response.tag_name
-
-Write-Host -ForegroundColor Gray "📨 Downloading version $version..."
+Write-Host -ForegroundColor Gray " Downloading version $version..."
 
 # Download assets
 foreach ($asset in $response.assets) {
@@ -43,7 +42,7 @@ if (-not ($currentPath -split ";") -contains $boatPath) {
     # If not, add it
     $updatedPath = $currentPath + ";" + $boatPath
     [System.Environment]::SetEnvironmentVariable("PATH", $updatedPath, [System.EnvironmentVariableTarget]::User)
-    Write-Host -ForegroundColor Gray "👣 Boat folder added to PATH successfully."
+    Write-Host -ForegroundColor Gray " Boat folder added to PATH successfully."
 }
 
 Write-Host -ForegroundColor Green "✅ Installation done!"
