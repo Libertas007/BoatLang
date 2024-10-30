@@ -101,12 +101,8 @@ public class BoatUpdater {
 
         processBuilder.inheritIO();
         Process process = processBuilder.start();
-        try {
-            process.waitFor();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new IOException("❌ Installation script interrupted", e);
-        }
+        System.out.println("The script will run while this process will exit. Although this may cause some unwanted visuals, it should be functional. If necessary, press CTRL+C or ENTER after installing.");
+        System.exit(0);
     }
 
     private static void saveCurrentVersion(String version, Date update) throws IOException {
