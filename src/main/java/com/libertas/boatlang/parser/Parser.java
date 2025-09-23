@@ -224,6 +224,8 @@ public class Parser {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidSyntax", "Expected an identifier.", currentToken.getRegion()), true);
             }
 
+
+            Region argStart = currentToken.getRegion();
             String type = (String) currentToken.getValue().value;
             advance();
 
@@ -231,10 +233,11 @@ public class Parser {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidSyntax", "Expected an identifier.", currentToken.getRegion()), true);
             }
 
+            Region argEnd = currentToken.getRegion();
             String argName = (String) currentToken.getValue().value;
             advance();
 
-            arguments.add(new BoatFunctionArgument(type, argName));
+            arguments.add(new BoatFunctionArgument(type, argName, argStart.combine(argEnd)));
         }
 
         if (currentToken.getType() != TokenType.BLOCK_START) {

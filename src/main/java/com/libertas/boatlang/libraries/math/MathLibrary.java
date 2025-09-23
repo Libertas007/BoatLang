@@ -61,6 +61,30 @@ public class MathLibrary extends Library {
             return new Barrel(((Fraction) arguments.get(0).value().get(context).value).negate());
         }));
 
+        setMethod("MODULO", new Method("MODULO", ((context, self, arguments, region) -> {
+            if (arguments.size() != 2) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 2 parameters, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);
+                return new None();
+            }
+
+            if (!(arguments.get(0).value().get(context) instanceof Barrel)) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "MismatchedTypes", "Expected BARREL, got " + arguments.get(0).value().get(context).displayName + ".", arguments.get(0).region()), true);
+                return new None();
+            }
+
+            if (!(arguments.get(1).value().get(context) instanceof Barrel)) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "MismatchedTypes", "Expected BARREL, got " + arguments.get(1).value().get(context).displayName + ".", arguments.get(1).region()), true);
+                return new None();
+            }
+
+            Fraction a = (Fraction) arguments.get(0).value().get(context).value;
+            Fraction b = (Fraction) arguments.get(1).value().get(context).value;
+
+
+            Fraction c = a.subtract(b.multiply((int) Math.floor(a.divide(b).doubleValue())));
+            return new Barrel(c);
+        })));
+
         setMethod("ATAN", new Method("ATAN", (context, self, arguments, region) -> {
             if (arguments.size() != 1) {
                 ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected 1 parameter, got " + arguments.size() + ".", arguments.get(arguments.size() - 1).region()), true);

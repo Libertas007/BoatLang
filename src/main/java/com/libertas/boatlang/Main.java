@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringJoiner;
@@ -30,14 +31,14 @@ public class Main {
             
             BROADCAST "Hello world!"
             """;
-    
+
     public static void main(String[] args) {
         if (args.length == 0) {
             terminal();
             return;
         }
 
-        if (args[0].equals("run")) {
+        if (args[0].equals("run") && args.length > 1) {
 
             RunConfiguration.getInstance().mode = RunMode.FILE;
 
@@ -49,6 +50,37 @@ public class Main {
             ExecutableFile file = new ExecutableFile(args[1], globalContext);
 
             file.run();
+            return;
+        }
+
+        if (args[0].equals("measure") && args.length > 1) {
+            System.out.println("Measuring execution time, running 10 times...");
+            RunConfiguration.getInstance().mode = RunMode.FILE;
+
+            ArrayList<Long> executionTimes = new ArrayList<>();
+
+            for (int i = 0; i < 10; i++) {
+                Instant start = Instant.now();
+                Context globalContext = new Context();
+
+                StandardLibrary stdLibrary = new StandardLibrary();
+                globalContext.loadContext(stdLibrary.asContext());
+
+                ExecutableFile file = new ExecutableFile(args[1], globalContext);
+
+                file.run();
+
+                Instant end = Instant.now();
+                executionTimes.add(end.toEpochMilli() - start.toEpochMilli());
+            }
+
+            long average = executionTimes.stream().mapToLong(Long::longValue).sum() / 10;
+            long min = executionTimes.stream().mapToLong(Long::longValue).min().getAsLong();
+            long max = executionTimes.stream().mapToLong(Long::longValue).max().getAsLong();
+
+            System.out.println("Average execution time: " + average + "ms");
+            System.out.println("Fastest execution time: " + min + "ms");
+            System.out.println("Slowest execution time: " + max + "ms");
             return;
         }
 
@@ -80,6 +112,7 @@ public class Main {
         System.out.println("\uD83D\uDEF6 run a file: boat run <filename>");
         System.out.println("\uD83D\uDD0E analyze file: boat analyze <filename>");
         System.out.println("\uD83C\uDD95 create new file: boat new <filename>");
+        System.out.println("⏱\uFE0F measure execution time of a file: boat measure <filename>");
         System.out.println("\uD83E\uDD75 update Boat: boat update");
     }
 

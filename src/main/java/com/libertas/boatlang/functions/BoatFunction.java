@@ -28,7 +28,7 @@ public class BoatFunction {
     public NodeResult run(Context context, List<BoatFunctionArgumentValue> values, Region region) {
         Context newContext = new Context(context);
 
-        if (!doArgumentsMatch(values)) {
+        if (!doArgumentsMatch(values, context)) {
             return new NodeResult(new None());
         }
 
@@ -36,7 +36,7 @@ public class BoatFunction {
             BoatFunctionArgument argument = arguments.get(i);
             Variable value = values.get(i).value();
 
-            newContext.setVariable(argument.name(), value);
+            newContext.setVariable(argument.name(), value.get(context));
         }
 
         NodeResult last = new NodeResult(new None());
@@ -51,7 +51,7 @@ public class BoatFunction {
         return last;
     }
 
-    private boolean doArgumentsMatch(List<BoatFunctionArgumentValue> provided) {
+    private boolean doArgumentsMatch(List<BoatFunctionArgumentValue> provided, Context context) {
         if (provided.size() != arguments.size()) {
             ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Expected " + arguments.size() + " parameters, got " + provided.size() + ".", new Region()));
             return false;
@@ -60,12 +60,11 @@ public class BoatFunction {
         List<Variable> values = provided.stream().map(BoatFunctionArgumentValue::value).toList();
 
         for (int i = 0; i < values.size(); i++) {
-            Variable value = values.get(i);
+            Variable value = values.get(i).get(context);
             BoatFunctionArgument argument = arguments.get(i);
 
-            if (!value.displayName.equals(argument.type())) {
-                // TODO: ADD REGION SUPPORT
-                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Type '" + value.displayName + "' does not match the type of '" + argument.type() + "'.", new Region()));
+            if (!value.displayName.equals(argument.type()) || argument.type().equals("ANY")) {
+                ErrorLog.getInstance().registerError(new BoatError(ErrorType.CRITICAL, "InvalidFunctionSignature", "Type '" + value.displayName + "' does not match the type of '" + argument.type() + "'.", provided.get(i).region()));
                 return false;
             }
         }

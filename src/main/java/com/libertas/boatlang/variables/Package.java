@@ -63,11 +63,11 @@ public class Package extends Variable {
         addImplementation(new Implementation("REQUEST", new ArrayList<>(), new NativeFunction("", (context, arguments, region) -> new Package(""))));
         addImplementation(new Implementation("ADD", List.of("PACKAGE", "PACKAGE"), new NativeFunction("", (context, arguments, region) -> {
             if (arguments.get(1).value() instanceof VariableReference) {
-                context.setVariable(((VariableReference) arguments.get(1).value()).name, new Package(arguments.get(0).value().get(context).value.toString() + (arguments.get(1).value()).get(context).value.toString()));
+                context.setVariable(((VariableReference) arguments.get(1).value()).name, new Package((arguments.get(1).value()).get(context).value.toString() + arguments.get(0).value().get(context).value.toString()));
                 return context.getVariable(((VariableReference) arguments.get(1).value()).name, arguments.get(1).region());
             }
 
-            return new Package(arguments.get(0).value().get(context).value + (String) arguments.get(1).value().get(context).value);
+            return new Package(arguments.get(1).value().get(context).value + (String) arguments.get(0).value().get(context).value);
         })));
         addImplementation(new Implementation("MULTIPLY", List.of("PACKAGE", "BARREL"), new NativeFunction("", (context, arguments, region) -> {
             if (arguments.get(0).value() instanceof VariableReference) {
